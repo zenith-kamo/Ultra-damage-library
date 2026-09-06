@@ -1,37 +1,38 @@
-![](https://media.forgecdn.net/attachments/description/null/description_4cc8a546-1409-4ee8-b1c9-d110b4c91dbc.png)
-<br>
-***
-# 📕Function <br>
-This is a library derived from Re:Avaritia, which includes the rendering API used in Re:Avaritia, and several prefabricated renderings have been created based on this API.
-***
-## 🔎How Use It? <br>
-This Lib has prepared a huge API and ten completed Render that you can use directly.
-### **Json:**
-```json5
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "minecraft:item/book"
-  },
-  "loader": "renderblender:glow_edge",
-  "glow_edge": {
-    "color": 16711680,
-    "width": 1.0,
-    "offset": -0.02
-  }
-}
+# Ultra Damage Library
+
+## ライセンス
+
+このプロジェクトでは、複数のライセンスを使用しています。
+
+### Ultra Damage Library本体
+
+以下のディレクトリ・ファイルを除く、Ultra Damage Library独自のソースコードは **MIT License** の下で公開されています。
+
+* `src/main/java/com/zenith/udl/renderblender/`
+* `src/main/resources/assets/udl/textures/misc/`
+
+詳細については、ルートディレクトリの [`LICENSE`](LICENSE) を参照してください。
+
+### RenderBlender
+
+このプロジェクトには、外部で開発された **RenderBlender** の仕組みが含まれています。
+
+RenderBlender関連のファイルは、以下に配置されています。
+
+```text
+src/main/java/com/zenith/udl/renderblender/
+src/main/resources/assets/udl/textures/misc/
 ```
-```json5
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "renderblender:item/armor/helmet/layer_0"
-  },
-  "loader": "renderblender:cosmic",
-  "cosmic": {
-    "mask": "renderblender:mask/infinity_helmet_mask"
-  }
-}
-```
-#### If your item is Tool,you can use this:
-`public class BlazeSwordItem extends SwordItem implements IToolTransform `
+
+これらのファイルは **GNU Lesser General Public License v3.0 (LGPL-3.0)** の対象であり、本プロジェクトのMIT Licenseの対象ではありません。
+
+RenderBlenderに関する著作権表示およびライセンス表示は維持されています。
+
+RenderBlenderのライセンス全文については、[`renderblender/LICENSE`](renderblender/LICENSE) を参照してください。
+## クレジット
+
+### RenderBlender
+
+本プロジェクトでは、RenderBlenderを利用しています。
+
+RenderBlenderの原作者および著作権情報については、RenderBlenderに付属するライセンス・著作権表示を参照してください。
