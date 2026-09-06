@@ -4,7 +4,6 @@ import com.zenith.udl.Udl;
 import com.zenith.udl.renderblender.client.model.GlowEdgeModelLoader;
 import com.zenith.udl.renderblender.client.model.HaloModelLoader;
 import com.zenith.udl.renderblender.client.model.ScaleModelLoader;
-import com.zenith.udl.renderblender.client.model.*;
 import com.zenith.udl.renderblender.client.model.cosmic.CosmicModelLoader;
 import com.zenith.udl.renderblender.client.model.cosmic.HaloCosmicModelLoader;
 import com.zenith.udl.renderblender.client.model.eternal.EternalModelLoader;
