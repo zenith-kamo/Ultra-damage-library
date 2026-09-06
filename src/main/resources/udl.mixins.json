@@ -1,0 +1,32 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.zenith.udl.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "udl.refmap.json",
+  "plugin": "com.zenith.udl.mixin.MixinProtectionPlugin",
+  "priority": -2147483647,
+  "mixins": [
+    "LivingEntityMixin",
+    "EntityTickMixin",
+    "MobAiMixin",
+    "BlockEntityMixin",
+    "MobAiMixin",
+    "ParticleEngineMixin",
+    "ServerLevelMixin",
+    "GoalSelectorMixin",
+    "TickMixin",
+    "renderblender.GameRendererMixin",
+    "renderblender.ItemRendererMixin",
+    "renderblender.RenderBuffersMixin",
+    "renderblender.accessors.GameRendererAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
