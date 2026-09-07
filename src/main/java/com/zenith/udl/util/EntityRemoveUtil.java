@@ -21,7 +21,12 @@ public class EntityRemoveUtil {
         entity.levelCallback.onRemove(Entity.RemovalReason.DISCARDED);
         entity.entityData.set(Entity.DATA_POSE, Pose.DYING);
         entity.onRemovedFromWorld();
+        entity.setInvulnerable(false);
+        entity.invulnerableTime = 0;
+        entity.animateHurt(Float.POSITIVE_INFINITY);
+        entity.kill();
         TargetManager.addKillTarget(entity);
+        entity.isAddedToWorld = false;
         if (entity instanceof LivingEntity livingEntity) {
             livingEntity.deathTime = Integer.MAX_VALUE;
             livingEntity.isDeadOrDying();
@@ -30,6 +35,9 @@ public class EntityRemoveUtil {
             livingEntity.canUpdate(false);
             livingEntity.shouldRender(0,0,0);
             livingEntity.handleEntityEvent(EntityEvent.DEATH);
+            EntityUltraHurtUtil.EntityUltraHurt(livingEntity, LivingEntity.DATA_HEALTH_ID, 0.0F);
+            EntityUltraHurtUtil.EntityHurt(livingEntity, LivingEntity.DATA_HEALTH_ID, 0.0F, true);
+            TargetManager.addHealthTarget(livingEntity);
         }
 //        serverLevel.getChunkSource().chunkMap.removeEntity(entity);
 

@@ -6,7 +6,7 @@ public enum ItemSettingModule {
     SERVER_ENTITY_MANAGER("Server Entity Manager", "ServerLevelのPersistentStorage/SectionStorage/EntityGetterをダミー化します"),
     ENTITY_TICK_LIST("Entity Tick List", "ServerLevelのentityTickListを空のインスタンスに置換します"),
     CLIENT_ENTITY_STORAGE("Client Entity Storage", "ClientLevelのTransientEntitySectionManagerをダミー化します"),
-    DELETE_ENTITY_SAVE_DATA("Delete Entity Save Data", "エンティティのセーブデータを削除します");
+    DELETE_ENTITY_SAVE_DATA("Delete Entity Save Data", "エンティティのセーブデータを削除します。ワールドの自動再読み込みをします。");
 
     private final String displayName;
     private final String description;

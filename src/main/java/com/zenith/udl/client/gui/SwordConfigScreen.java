@@ -94,7 +94,7 @@ public class SwordConfigScreen extends Screen {
 
         ModernToggleButton standaloneBtn = new ModernToggleButton(
                 panelX + PANEL_PADDING, yOffset, contentWidth, 24,
-                standaloneModule.getDisplayName().copy().withStyle(ChatFormatting.GOLD),
+                standaloneModule.getDisplayName(),
                 standaloneModule.getDescription(),
                 standaloneEnabled,
                 (value) -> featureStates.put(standaloneModule, value)

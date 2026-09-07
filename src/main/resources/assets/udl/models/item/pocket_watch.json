@@ -1,4 +1,5 @@
 {
+  "loader": "udl:cosmic",
   "parent": "item/generated",
   "textures": {
     "layer0": "udl:item/pocket_watch"
