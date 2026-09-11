@@ -2,7 +2,7 @@
   "loader": "udl:cosmic",
   "parent": "item/handheld",
   "textures": {
-    "layer0": "udl:item/ultra_damage_library_sword"
+    "layer0": "udl:item/ultra_damage_library_sword_block"
   },
   "cosmic": {
     "mask": [

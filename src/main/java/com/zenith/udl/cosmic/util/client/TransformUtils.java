@@ -16,6 +16,7 @@ import java.util.Map;
 public final class TransformUtils {
     public static final PerspectiveModelState IDENTITY = PerspectiveModelState.IDENTITY;
     public static final PerspectiveModelState DEFAULT_TOOL;
+    public static final PerspectiveModelState BLOCKING_TOOL;
     public static final double torad = 0.017453292519943;
 
     static {
@@ -27,6 +28,11 @@ public final class TransformUtils {
         map.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, create(1.13F, 3.2F, 1.13F, 0F, -90F, 25, 0.68F));
         map.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND, create(1.13F, 3.2F, 1.13F, 0F, 90F, -25, 0.68F));
         DEFAULT_TOOL = new PerspectiveModelState(ImmutableMap.copyOf(map));
+
+        Map<ItemDisplayContext, Transformation> blockingMap = new HashMap<>(map);
+        blockingMap.put(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, create(-5F, 2F, -1F, 0F, 180F, 0F, 1F));
+        blockingMap.put(ItemDisplayContext.FIRST_PERSON_LEFT_HAND, create(-5F, 2F, -1F, 0F, -180F, 0F, 1F));
+        BLOCKING_TOOL = new PerspectiveModelState(ImmutableMap.copyOf(blockingMap));
     }
 
     public static Transformation create(float tx, float ty, float tz, float rx, float ry, float rz, float s) {

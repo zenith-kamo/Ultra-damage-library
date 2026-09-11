@@ -17,10 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.PickaxeItem;
-import net.minecraft.world.item.Tiers;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 
@@ -30,7 +27,7 @@ import org.slf4j.Logger;
  */
 
 
-public class UltraDamageLibrarySwordItem extends PickaxeItem {
+public class UltraDamageLibrarySwordItem extends SwordItem {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 

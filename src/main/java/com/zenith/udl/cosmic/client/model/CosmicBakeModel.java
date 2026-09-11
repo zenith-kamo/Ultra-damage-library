@@ -45,6 +45,7 @@ public final class CosmicBakeModel implements BakedModel {
     private final List<ResourceLocation> maskSprite;
     private final BakedModel wrapped;
     private final ItemOverrides overrideList;
+    private final ModelState baseState;
     private ModelState parentState;
     private LivingEntity entity;
     private ClientLevel world;
@@ -59,14 +60,22 @@ public final class CosmicBakeModel implements BakedModel {
             }
         };
         this.wrapped = wrapped;
-        this.parentState = TransformUtils.stateFromItemTransforms(wrapped.getTransforms());
+        this.baseState = TransformUtils.stateFromItemTransforms(wrapped.getTransforms());
+        this.parentState = this.baseState;
         this.maskSprite = maskSprite;
     }
 
-    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay) {
+    public void applySwordStateFromStack(ItemStack stack) {
         if (stack.getItem() == ModItems.UDL_SWORD.get()) {
-            this.parentState = TransformUtils.DEFAULT_TOOL;
+            Minecraft mc = Minecraft.getInstance();
+            boolean isBlocking = mc.player != null && mc.player.isUsingItem() && mc.player.getUseItem() == stack;
+            this.parentState = isBlocking ? TransformUtils.BLOCKING_TOOL : TransformUtils.DEFAULT_TOOL;
+        } else {
+            this.parentState = this.baseState;
         }
+    }
+
+    public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay) {
         BakedModel model = this.wrapped.getOverrides().resolve(this.wrapped, stack, this.world, this.entity, 0);
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         assert model != null;

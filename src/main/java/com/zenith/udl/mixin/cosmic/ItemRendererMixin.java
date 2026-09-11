@@ -18,6 +18,7 @@ public abstract class ItemRendererMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void onRenderItem(ItemStack stack, ItemDisplayContext context, boolean leftHand, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, BakedModel modelIn, CallbackInfo ci) {
         if (modelIn instanceof CosmicBakeModel iItemRenderer) {
+            iItemRenderer.applySwordStateFromStack(stack);
             ci.cancel();
             mStack.pushPose();
             final CosmicBakeModel renderer = (CosmicBakeModel) ForgeHooksClient.handleCameraTransforms(mStack, iItemRenderer, context, leftHand);
