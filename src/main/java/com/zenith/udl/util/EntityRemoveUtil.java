@@ -7,9 +7,14 @@ import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraftforge.entity.PartEntity;
 
 public class EntityRemoveUtil {
     public static void removeEntity(Entity entity, ServerLevel serverLevel) {
+        if (entity instanceof PartEntity<?> partEntity) {
+            removeEntity(partEntity.getParent(), serverLevel);
+            return;
+        }
         entity.remove(Entity.RemovalReason.DISCARDED);
         entity.setRemoved(Entity.RemovalReason.DISCARDED);
         entity.gameEvent(GameEvent.ENTITY_DIE);
@@ -26,7 +31,14 @@ public class EntityRemoveUtil {
         entity.animateHurt(Float.POSITIVE_INFINITY);
         entity.kill();
         TargetManager.addKillTarget(entity);
-//        entity.isAddedToWorld = false;
+        serverLevel.getChunkSource().removeEntity(entity);
+        entity.setPos(Float.MAX_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
+        entity.xo = Float.MAX_VALUE;
+        entity.yo = Float.MIN_VALUE;
+        entity.zo = Float.MAX_VALUE;
+        entity.xOld = Float.MAX_VALUE;
+        entity.yOld = Float.MIN_VALUE;
+        entity.zOld = Float.MAX_VALUE;
         if (entity instanceof LivingEntity livingEntity) {
             livingEntity.deathTime = Integer.MAX_VALUE;
             livingEntity.isDeadOrDying();
@@ -38,8 +50,12 @@ public class EntityRemoveUtil {
             EntityUltraHurtUtil.EntityUltraHurt(livingEntity, LivingEntity.DATA_HEALTH_ID, 0.0F);
             EntityUltraHurtUtil.EntityHurt(livingEntity, LivingEntity.DATA_HEALTH_ID, 0.0F, true);
             TargetManager.addHealthTarget(livingEntity);
+            livingEntity.deathTime = 20;
+            livingEntity.hurtTime = 0;
+            livingEntity.setSilent(true);
+            livingEntity.getCombatTracker().recordDamage(livingEntity.damageSources().generic(), Float.MAX_VALUE);
+            livingEntity.die(livingEntity.damageSources().generic());
         }
-//        serverLevel.getChunkSource().chunkMap.removeEntity(entity);
 
     }
 }

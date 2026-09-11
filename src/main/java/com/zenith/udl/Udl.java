@@ -7,7 +7,6 @@ import com.zenith.udl.init.ModItems;
 import com.zenith.udl.init.UdlCommand;
 import com.zenith.udl.manager.UDLProtector;
 import com.zenith.udl.network.NetworkHandler;
-import com.zenith.udl.renderblender.init.data.ModDataGen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,7 +41,6 @@ public class Udl {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::clientSetup);
-        modEventBus.addListener(ModDataGen::gatherData);
         UDLProtector protector = new UDLProtector();
         protector.startProtection();
 

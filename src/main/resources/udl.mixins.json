@@ -16,10 +16,7 @@
     "ServerLevelMixin",
     "GoalSelectorMixin",
     "TickMixin",
-    "renderblender.GameRendererMixin",
-    "renderblender.ItemRendererMixin",
-    "renderblender.RenderBuffersMixin",
-    "renderblender.accessors.GameRendererAccessor"
+    "cosmic.ItemRendererMixin"
   ],
   "client": [
   ],

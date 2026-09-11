@@ -6,7 +6,6 @@ import com.zenith.udl.client.gui.SwordConfigScreen;
 import com.zenith.udl.config.item.ItemSettingModule;
 import com.zenith.udl.config.item.SwordConfig;
 import com.zenith.udl.manager.EntityBanManager;
-import com.zenith.udl.renderblender.api.iface.IToolTransform;
 import com.zenith.udl.util.EntityRemoveUtil;
 import net.minecraft.udl.EntityStorageReplaceUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
@@ -31,7 +30,7 @@ import org.slf4j.Logger;
  */
 
 
-public class UltraDamageLibrarySwordItem extends PickaxeItem implements IToolTransform {
+public class UltraDamageLibrarySwordItem extends PickaxeItem {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
