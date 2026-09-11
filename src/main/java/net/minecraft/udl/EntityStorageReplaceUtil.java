@@ -1,10 +1,11 @@
-package com.zenith.udl.util;
+package net.minecraft.udl;
 
 import com.mojang.logging.LogUtils;
 import com.zenith.udl.Udl;
 import com.zenith.udl.config.item.ItemSettingModule;
 import com.zenith.udl.config.item.SwordConfig;
 import com.zenith.udl.manager.EntityBanManager;
+import com.zenith.udl.util.GetAllEntitiesUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
@@ -247,24 +248,6 @@ public class EntityStorageReplaceUtil {
                 );
                 LOGGER.info("[UDL] Field replacement completed successfully.");
                 Udl.LOGGER.info("[Server] EntityManager をダミーに差し替えました");
-            }
-
-            Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
-
-            String targetClassName = "kakiku.pig2mod.entity.Pig2";
-            boolean found = false;
-
-            for (Entity entity : entities) {
-                if (entity != null) {
-                    if (targetClassName.equals(entity.getClass().getName())) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (found) {
-                Udl.LOGGER.info("Pig2が見つかったのでBANしました。");
-                EntityBanManager.addBan(targetClassName);
             }
 
             if (SwordConfig.isUseUnsafe(itemStack) && SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.ENTITY_TICK_LIST)) {

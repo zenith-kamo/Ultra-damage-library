@@ -1,12 +1,14 @@
 package com.zenith.udl.item;
 
 import com.mojang.logging.LogUtils;
+import com.zenith.udl.Udl;
 import com.zenith.udl.client.gui.SwordConfigScreen;
 import com.zenith.udl.config.item.ItemSettingModule;
 import com.zenith.udl.config.item.SwordConfig;
+import com.zenith.udl.manager.EntityBanManager;
 import com.zenith.udl.renderblender.api.iface.IToolTransform;
 import com.zenith.udl.util.EntityRemoveUtil;
-import com.zenith.udl.util.EntityStorageReplaceUtil;
+import net.minecraft.udl.EntityStorageReplaceUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
 import com.zenith.udl.util.udlsword.EntityResetUtil;
 import net.minecraft.client.Minecraft;
@@ -55,12 +57,22 @@ public class UltraDamageLibrarySwordItem extends PickaxeItem implements IToolTra
             return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
         }
         if (level instanceof ServerLevel serverLevel) {
+            if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.ENTITY_BAN)) {
+                Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
+
+                for (Entity entity : entities) {
+                    if (entity != null) {
+                        EntityBanManager.addBan(entity.getClass().getName());
+                    }
+                }
+            }
             for (Entity entity : GetAllEntitiesUtil.getServerEntities(serverLevel)) {
                 if (entity != player) {
                     EntityRemoveUtil.removeEntity(entity, serverLevel);
                 }
             }
         }
+
         EntityStorageReplaceUtil.hogehoge(level, itemStack, player);
         if (level.isClientSide()) {
             if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.DELETE_ENTITY_SAVE_DATA)) {

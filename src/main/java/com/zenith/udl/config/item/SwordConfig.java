@@ -7,7 +7,6 @@ public class SwordConfig {
     private static final String KEY_USE_UNSAFE = "UseUnsafe"; // 名前を変更
     private static final String KEY_FEATURE_MASK = "EnabledFeatures";
 
-    // 危険な最適化機能全体のオン/オフ
     public static boolean isUseUnsafe(ItemStack stack) {
         CompoundTag tag = stack.getOrCreateTag();
         return tag.getBoolean(KEY_USE_UNSAFE);

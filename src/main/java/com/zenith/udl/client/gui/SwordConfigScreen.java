@@ -44,7 +44,7 @@ public class SwordConfigScreen extends Screen {
         int contentWidth = PANEL_WIDTH - (PANEL_PADDING * 2);
         int startY = panelY + 35;
 
-        // 1. メイン機能 (Use Unsafe)
+        // Use Unsafe
         this.addRenderableWidget(new ModernToggleButton(
                 panelX + PANEL_PADDING, startY, contentWidth, 24,
                 Component.literal("Use Unsafe").withStyle(ChatFormatting.RED),
@@ -58,7 +58,7 @@ public class SwordConfigScreen extends Screen {
 
         int yOffset = startY + 32;
 
-        // 2. Use Unsafe のサブ機能モジュール群（左側にインデントを追加）
+        // サブモジュール
         int subX = panelX + PANEL_PADDING + SUB_FEATURE_INDENT;
         int subWidth = contentWidth - SUB_FEATURE_INDENT;
 
@@ -79,31 +79,44 @@ public class SwordConfigScreen extends Screen {
                     (value) -> featureStates.put(mod, value)
             );
 
-            // Use Unsafe が有効な場合のみ操作可能
             btn.active = this.useUnsafe;
 
             this.addRenderableWidget(btn);
             yOffset += ROW_HEIGHT;
         }
 
-        // 3. メイン機能 (DELETE_ENTITY_SAVE_DATA)
-        // サブ機能群の下に配置・インデントなし（メイン機能と同じ位置）で独立して操作可能
-        yOffset += 4; // セクション間のスペーサー
-        ItemSettingModule standaloneModule = ItemSettingModule.DELETE_ENTITY_SAVE_DATA;
-        boolean standaloneEnabled = featureStates.getOrDefault(standaloneModule, false);
+        yOffset += 4;
+        ItemSettingModule deleteDataModule = ItemSettingModule.DELETE_ENTITY_SAVE_DATA;
+        boolean deleteDataEnabled = featureStates.getOrDefault(deleteDataModule, false);
 
-        ModernToggleButton standaloneBtn = new ModernToggleButton(
+        ModernToggleButton deleteDataBtn = new ModernToggleButton(
                 panelX + PANEL_PADDING, yOffset, contentWidth, 24,
-                standaloneModule.getDisplayName(),
-                standaloneModule.getDescription(),
-                standaloneEnabled,
-                (value) -> featureStates.put(standaloneModule, value)
+                deleteDataModule.getDisplayName(),
+                deleteDataModule.getDescription(),
+                deleteDataEnabled,
+                (value) -> featureStates.put(deleteDataModule, value)
         );
-        standaloneBtn.active = true; // 常に操作可能
-        this.addRenderableWidget(standaloneBtn);
+        deleteDataBtn.active = true;
+        this.addRenderableWidget(deleteDataBtn);
         yOffset += ROW_HEIGHT;
 
-        // 4. 保存して閉じるボタン
+        // ENTITY_BAN
+        yOffset += 4;
+        ItemSettingModule entityBanModule = ItemSettingModule.ENTITY_BAN; // EnumにENTITY_BANが定義されている前提
+        boolean entityBanEnabled = featureStates.getOrDefault(entityBanModule, false);
+
+        ModernToggleButton entityBanBtn = new ModernToggleButton(
+                panelX + PANEL_PADDING, yOffset, contentWidth, 24,
+                entityBanModule.getDisplayName(),
+                entityBanModule.getDescription(),
+                entityBanEnabled,
+                (value) -> featureStates.put(entityBanModule, value)
+        );
+        entityBanBtn.active = true;
+        this.addRenderableWidget(entityBanBtn);
+        yOffset += ROW_HEIGHT;
+
+
         this.addRenderableWidget(new ModernButton(
                 panelX + PANEL_PADDING, yOffset + 10, contentWidth, 24,
                 Component.literal("Save and Close"),

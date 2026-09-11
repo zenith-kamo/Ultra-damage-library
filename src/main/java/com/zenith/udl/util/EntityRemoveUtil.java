@@ -26,7 +26,7 @@ public class EntityRemoveUtil {
         entity.animateHurt(Float.POSITIVE_INFINITY);
         entity.kill();
         TargetManager.addKillTarget(entity);
-        entity.isAddedToWorld = false;
+//        entity.isAddedToWorld = false;
         if (entity instanceof LivingEntity livingEntity) {
             livingEntity.deathTime = Integer.MAX_VALUE;
             livingEntity.isDeadOrDying();
