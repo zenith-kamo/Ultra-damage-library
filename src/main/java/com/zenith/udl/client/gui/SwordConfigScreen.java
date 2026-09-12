@@ -30,7 +30,8 @@ public class SwordConfigScreen extends Screen {
                     ItemSettingModule.CLIENT_ENTITY_STORAGE
             )),
             new StandaloneNode(ItemSettingModule.DELETE_ENTITY_SAVE_DATA),
-            new StandaloneNode(ItemSettingModule.ENTITY_BAN)
+            new StandaloneNode(ItemSettingModule.ENTITY_BAN),
+            new StandaloneNode(ItemSettingModule.HIDDEN_ENTITY)
     );
     public SwordConfigScreen(ItemStack swordStack) {
         super(Component.literal("UltraDamage-Library Settings"));

@@ -16,7 +16,8 @@
     "ServerLevelMixin",
     "GoalSelectorMixin",
     "TickMixin",
-    "cosmic.ItemRendererMixin"
+    "cosmic.ItemRendererMixin",
+    "sword.EntityRenderDispatcherMixin"
   ],
   "client": [
   ],

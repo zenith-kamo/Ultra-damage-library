@@ -6,6 +6,7 @@ import com.zenith.udl.client.gui.SwordConfigScreen;
 import com.zenith.udl.config.item.ItemSettingModule;
 import com.zenith.udl.config.item.SwordConfig;
 import com.zenith.udl.manager.EntityBanManager;
+import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.util.EntityRemoveUtil;
 import net.minecraft.udl.EntityStorageReplaceUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
@@ -53,18 +54,19 @@ public class UltraDamageLibrarySwordItem extends SwordItem {
             return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
         }
         if (level instanceof ServerLevel serverLevel) {
-            if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.ENTITY_BAN)) {
-                Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
-
-                for (Entity entity : entities) {
-                    if (entity != null) {
+            Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
+            for (Entity entity : entities) {
+                if (entity != null && (entity != player)) {
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.ENTITY_BAN)) {
                         EntityBanManager.addBan(entity.getClass().getName());
                     }
-                }
-            }
-            for (Entity entity : GetAllEntitiesUtil.getServerEntities(serverLevel)) {
-                if (entity != player) {
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY)) {
+                        TargetManager.addHiddenTarget(entity);
+                    }
                     EntityRemoveUtil.removeEntity(entity, serverLevel);
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY)) {
+                        TargetManager.addHiddenTarget(entity);
+                    }
                 }
             }
         }

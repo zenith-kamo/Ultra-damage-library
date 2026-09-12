@@ -16,6 +16,9 @@ public class TargetManager {
     private static final Set<Entity> KILL_TARGETS =
             Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
+    private static final Set<Entity> HIDDEN_TARGETS =
+            Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+
     public static void addHealthTarget(LivingEntity entity) {
         if (entity != null && !entity.isRemoved()) {
             HEALTH_TARGETS.add(entity);
@@ -55,5 +58,26 @@ public class TargetManager {
 
     public static Set<Entity> getKillTargets() {
         return KILL_TARGETS;
+    }
+
+    // Hidden
+    public static void addHiddenTarget(Entity entity) {
+        if (entity != null && !entity.isRemoved()) {
+            HIDDEN_TARGETS.add(entity);
+        }
+    }
+
+    public static void removeHiddenTarget(Entity entity) {
+        if (entity != null) {
+            HIDDEN_TARGETS.remove(entity);
+        }
+    }
+
+    public static boolean isHiddenTarget(Entity entity) {
+        return entity != null && !entity.isRemoved() && HIDDEN_TARGETS.contains(entity);
+    }
+
+    public static Set<Entity> getHiddenTargets() {
+        return HIDDEN_TARGETS;
     }
 }

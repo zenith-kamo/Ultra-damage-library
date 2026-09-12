@@ -7,7 +7,8 @@ public enum ItemSettingModule {
     ENTITY_TICK_LIST("Entity Tick List", "ServerLevelのentityTickListを空のインスタンスに置換します"),
     CLIENT_ENTITY_STORAGE("Client Entity Storage", "ClientLevelのTransientEntitySectionManagerをダミー化します"),
     DELETE_ENTITY_SAVE_DATA("Delete Entity Save Data", "エンティティのセーブデータを削除します。ワールドの自動再読み込みをします。"),
-    ENTITY_BAN("Entity Spawn Ban", "エンティティのスポーンと復活をブロックします。");
+    ENTITY_BAN("Entity Spawn Ban", "エンティティのスポーンと復活をブロックします。"),
+    HIDDEN_ENTITY("Hidden Entity", "エンティティの見た目を非表示にします。");
 
     private final String displayName;
     private final String description;
