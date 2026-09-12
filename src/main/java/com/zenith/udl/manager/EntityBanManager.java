@@ -26,6 +26,10 @@ public class EntityBanManager {
         BANNED_ENTITY_CLASSES.clear();
     }
 
+    public static boolean isBanned(String className) {
+        return BANNED_ENTITY_CLASSES.contains(className);
+    }
+
     @SubscribeEvent
     public void onEntityJoinLevel(EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
