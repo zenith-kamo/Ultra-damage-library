@@ -2,6 +2,7 @@ package com.zenith.udl.manager;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.Set;
@@ -21,6 +22,10 @@ public class EntityBanManager {
         BANNED_ENTITY_CLASSES.remove(className);
     }
 
+    public static void clearBans() {
+        BANNED_ENTITY_CLASSES.clear();
+    }
+
     @SubscribeEvent
     public void onEntityJoinLevel(EntityJoinLevelEvent event) {
         Entity entity = event.getEntity();
@@ -31,5 +36,9 @@ public class EntityBanManager {
         if (BANNED_ENTITY_CLASSES.contains(entityClassName)) {
             event.setCanceled(true);
         }
+    }
+    @SubscribeEvent
+    public void onLevelUnload(LevelEvent.Unload event) {
+        clearBans();
     }
 }
