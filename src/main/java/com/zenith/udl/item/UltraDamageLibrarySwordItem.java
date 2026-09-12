@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 public class UltraDamageLibrarySwordItem extends SwordItem {
 
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static boolean HIDDEN_ENTITY_ALL = false;
 
     public UltraDamageLibrarySwordItem() {
         super(
@@ -40,6 +41,10 @@ public class UltraDamageLibrarySwordItem extends SwordItem {
                 new Properties()
                         .stacksTo(1)
                         .fireResistant());
+    }
+
+    public static boolean isForceHiddenEntity() {
+        return HIDDEN_ENTITY_ALL;
     }
 
     @Override
@@ -57,16 +62,19 @@ public class UltraDamageLibrarySwordItem extends SwordItem {
             Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
             for (Entity entity : entities) {
                 if (entity != null && (entity != player)) {
-                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.ENTITY_BAN)) {
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.ENTITY_BAN))
                         EntityBanManager.addBan(entity.getClass().getName());
-                    }
-                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY)) {
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
                         TargetManager.addHiddenTarget(entity);
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY_ALL)) {
+                        HIDDEN_ENTITY_ALL = !HIDDEN_ENTITY_ALL;
+                        player.displayClientMessage(Component.literal("HIDDEN_ENTITY_ALL: ")
+                                .append(String.valueOf(HIDDEN_ENTITY_ALL)), true);
                     }
                     EntityRemoveUtil.removeEntity(entity, serverLevel);
-                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY)) {
+
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
                         TargetManager.addHiddenTarget(entity);
-                    }
                 }
             }
         }

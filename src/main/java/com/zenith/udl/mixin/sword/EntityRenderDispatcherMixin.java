@@ -11,21 +11,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(EntityRenderDispatcher.class)
+import static com.zenith.udl.item.UltraDamageLibrarySwordItem.isForceHiddenEntity;
+
+@Mixin(value = EntityRenderDispatcher.class, priority = Integer.MAX_VALUE)
 public class EntityRenderDispatcherMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    private <E extends Entity> void cancelNonPlayerEntities(
-            E entity,
-            double x, double y, double z,
-            float yaw, float partialTicks,
-            PoseStack poseStack,
-            MultiBufferSource buffer,
-            int packedLight,
-            CallbackInfo ci
-    ) {
-        if (!(entity instanceof Player) && TargetManager.isHiddenTarget(entity)) {
-            ci.cancel();
+    private <E extends Entity> void cancelNonPlayerEntities(E entity, double x, double y, double z, float yaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
+        if (!(entity instanceof Player)) {
+            if (isForceHiddenEntity()) ci.cancel();
+            if (TargetManager.isHiddenTarget(entity)) ci.cancel();
         }
     }
 }
