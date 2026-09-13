@@ -51,7 +51,7 @@ public class UpdateTitleRule implements IMethodTransformerRule {
                             methodNode.instructions.remove(varInsnNode);
                         }
                     }
-                    methodNode.instructions.set(methodInsn, new LdcInsnNode("UDL!!"));
+                    methodNode.instructions.set(methodInsn, new LdcInsnNode("まいんくらふと♡ ふぉーじ 1.20.1"));
                     Udl.LOGGER.info("[UDL] [UpdateTitleRule] Replaced createTitle with 'UDL!!'");
                     break;
                 }
