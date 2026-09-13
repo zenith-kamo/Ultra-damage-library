@@ -17,6 +17,7 @@
     "GoalSelectorMixin",
     "TickMixin",
     "cosmic.ItemRendererMixin",
+    "cosmic.ItemInHandRendererMixin",
     "sword.EntityRenderDispatcherMixin"
   ],
   "client": [

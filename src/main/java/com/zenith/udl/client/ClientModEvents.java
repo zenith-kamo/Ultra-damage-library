@@ -30,14 +30,14 @@ public class ClientModEvents {
      * アイテムに blocking プロパティ（0.0 または 1.0）を登録するヘルパーメソッド
      */
     private static void registerBlockingProperty(Item item) {
-        ItemProperties.register(
-                item,
-                new ResourceLocation("blocking"),
-                (stack, level, entity, seed) -> {
-                    // プレイヤー/エンティティが存在し、アイテムを使用中(右クリック中)かつ
-                    // 現在使用しているアイテムがこのアイテム自体である場合に 1.0F を返す
-                    return entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F;
-                }
-        );
+//        ItemProperties.register(
+//                item,
+//                new ResourceLocation("blocking"),
+//                (stack, level, entity, seed) -> {
+//                    // プレイヤー/エンティティが存在し、アイテムを使用中(右クリック中)かつ
+//                    // 現在使用しているアイテムがこのアイテム自体である場合に 1.0F を返す
+//                    return entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F;
+//                }
+//        );
     }
 }

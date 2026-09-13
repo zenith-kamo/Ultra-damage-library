@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.zenith.udl.client.gui.SwordConfigScreen;
 import com.zenith.udl.config.item.ItemSettingModule;
 import com.zenith.udl.config.item.SwordConfig;
+import com.zenith.udl.cosmic.client.renderer.CosmicItemExtensions;
 import com.zenith.udl.manager.EntityBanManager;
 import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.util.EntityRemoveUtil;
@@ -22,7 +23,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.slf4j.Logger;
+
+import java.util.function.Consumer;
 
 public class UltraDamageLibrarySwordItem extends UdlSwordItem {
 
@@ -98,5 +102,20 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem {
     @Override
     public int getUseDuration(ItemStack stack) {
         return 72000;
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(CosmicItemExtensions.INSTANCE);
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        // スロット自体が切り替わっていない場合（同じアイテムを手に持ったまま右クリックした場合）は
+        // 再装備アニメーション（下から持ち上げる動き）をキャンセルする
+        if (!slotChanged && ItemStack.isSameItem(oldStack, newStack)) {
+            return false;
+        }
+        return super.shouldCauseReequipAnimation(oldStack, newStack, slotChanged);
     }
 }

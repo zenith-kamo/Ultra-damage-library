@@ -65,15 +65,15 @@ public final class CosmicBakeModel implements BakedModel {
         this.maskSprite = maskSprite;
     }
 
-    public void applySwordStateFromStack(ItemStack stack) {
-        if (stack.getItem() == ModItems.UDL_SWORD.get()) {
-            Minecraft mc = Minecraft.getInstance();
-            boolean isBlocking = mc.player != null && mc.player.isUsingItem() && mc.player.getUseItem() == stack;
-            this.parentState = isBlocking ? TransformUtils.BLOCKING_TOOL : TransformUtils.DEFAULT_TOOL;
-        } else {
-            this.parentState = this.baseState;
-        }
-    }
+//    public void applySwordStateFromStack(ItemStack stack) {
+//        if (stack.getItem() == ModItems.UDL_SWORD.get()) {
+//            Minecraft mc = Minecraft.getInstance();
+//            boolean isBlocking = mc.player != null && mc.player.isUsingItem() && mc.player.getUseItem() == stack;
+//            this.parentState = isBlocking ? TransformUtils.BLOCKING_TOOL : TransformUtils.DEFAULT_TOOL;
+//        } else {
+//            this.parentState = this.baseState;
+//        }
+//    }
 
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, PoseStack pStack, MultiBufferSource buffers, int packedLight, int packedOverlay) {
         BakedModel model = this.wrapped.getOverrides().resolve(this.wrapped, stack, this.world, this.entity, 0);
