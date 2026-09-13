@@ -55,6 +55,13 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem {
             return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
         }
         if (level instanceof ServerLevel serverLevel) {
+            // エンティティが存在するかに関わらず非表示にする
+            if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY_ALL)) {
+                HIDDEN_ENTITY_ALL = !HIDDEN_ENTITY_ALL;
+                player.displayClientMessage(Component.literal("HIDDEN_ENTITY_ALL: ")
+                        .append(String.valueOf(HIDDEN_ENTITY_ALL)), true);
+            }
+
             Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
             for (Entity entity : entities) {
                 if (entity != null && (entity != player)) {
@@ -62,13 +69,8 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem {
                         EntityBanManager.addBan(entity.getClass().getName());
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
                         TargetManager.addHiddenTarget(entity);
-                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY_ALL)) {
-                        HIDDEN_ENTITY_ALL = !HIDDEN_ENTITY_ALL;
-                        player.displayClientMessage(Component.literal("HIDDEN_ENTITY_ALL: ")
-                                .append(String.valueOf(HIDDEN_ENTITY_ALL)), true);
-                    }
-
-                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK)) EntityRemoveUtil.removeEntity(entity, serverLevel);
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK))
+                        EntityRemoveUtil.removeEntity(entity, serverLevel);
 
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
                         TargetManager.addHiddenTarget(entity);
