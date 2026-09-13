@@ -49,7 +49,6 @@ public class EntityRemoveUtil {
             livingEntity.handleEntityEvent(EntityEvent.DEATH);
             EntityUltraHurtUtil.EntityUltraHurt(livingEntity, LivingEntity.DATA_HEALTH_ID, 0.0F);
             EntityUltraHurtUtil.EntityHurt(livingEntity, LivingEntity.DATA_HEALTH_ID, 0.0F, true);
-            TargetManager.addHealthTarget(livingEntity);
             livingEntity.deathTime = 20;
             livingEntity.hurtTime = 0;
             livingEntity.setSilent(true);
