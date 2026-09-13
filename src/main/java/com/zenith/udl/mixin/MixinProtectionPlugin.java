@@ -1,5 +1,6 @@
 package com.zenith.udl.mixin;
 
+import com.zenith.udl.transformer.UdlTransformer;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -14,8 +15,8 @@ import java.util.function.Predicate;
 
 public class MixinProtectionPlugin implements IMixinConfigPlugin {
 
-    // 1. クラスがJVMにロードされた瞬間に実行（最速発動）
     static {
+        UdlTransformer.ensureLaunchPluginInstalled();
         protectAll();
     }
 
@@ -146,6 +147,7 @@ public class MixinProtectionPlugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+        UdlTransformer.transform(UdlTransformer.Phase.PostMixin, targetClass);
     }
 
     /**
@@ -160,7 +162,9 @@ public class MixinProtectionPlugin implements IMixinConfigPlugin {
                 "org.spongepowered.",
                 "net.minecraft.",
                 "net.minecraftforge.",
-                "cpw.mods.modlauncher."
+                "cpw.mods.modlauncher.",
+                "org.objectweb.asm.",
+                "java.lang.reflect."
         };
 
         public ProtectedList(Collection<? extends E> c) {

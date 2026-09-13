@@ -37,7 +37,6 @@ public class Udl {
 //    }
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create();
     public Udl() {
-//        com.zenith.udl.transformer.TransformerService.ensureLaunchPluginInstalled();
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::clientSetup);
