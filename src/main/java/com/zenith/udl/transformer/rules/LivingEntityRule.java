@@ -1,5 +1,6 @@
 package com.zenith.udl.transformer.rules;
 
+import com.zenith.udl.Udl;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InsnList;
@@ -14,56 +15,67 @@ public class LivingEntityRule implements IMethodTransformerRule {
 
     private static final String TARGET_MANAGER = "com/zenith/udl/manager/TargetManager";
 
+    private static final String[] GET_HEALTH_NAMES = {
+            "getHealth",
+            "m_21223_",
+    };
+
+    private static final String[] GET_MAX_HEALTH_NAMES = {
+            "getMaxHealth",
+            "m_21233_",
+    };
+
     @Override
     public boolean matches(ClassNode classNode, MethodNode methodNode) {
         if (!classNode.name.equals("net/minecraft/world/entity/LivingEntity")) {
             return false;
         }
 
-        // getHealth() と getMaxHealth() の両方を対象にする
-        return (methodNode.name.equals("getHealth") && methodNode.desc.equals("()F")) ||
-                (methodNode.name.equals("getMaxHealth") && methodNode.desc.equals("()F"));
+        boolean isGetHealth = matchesAny(methodNode.name, GET_HEALTH_NAMES) && methodNode.desc.equals("()F");
+        boolean isGetMaxHealth = matchesAny(methodNode.name, GET_MAX_HEALTH_NAMES) && methodNode.desc.equals("()F");
+
+        if (methodNode.desc.equals("()F")) {
+            Udl.LOGGER.info("[UDL] [HealthOverride] Checking method: {}{} (health:{}, maxHealth:{})",
+                    methodNode.name, methodNode.desc, isGetHealth, isGetMaxHealth);
+        }
+
+        return isGetHealth || isGetMaxHealth;
+    }
+
+    private boolean matchesAny(String name, String[] candidates) {
+        for (String c : candidates) {
+            if (name.equals(c)) return true;
+        }
+        return false;
     }
 
     @Override
     public void apply(ClassNode classNode, MethodNode methodNode) {
         InsnList toInject = new InsnList();
-        LabelNode originalCode = new LabelNode(); // 元の処理の先頭ラベル
+        LabelNode originalCode = new LabelNode();
 
-        // 1. this (LivingEntity) をスタックに積む
         toInject.add(new VarInsnNode(Opcodes.ALOAD, 0));
 
-        // 2. 対象メソッドに応じて、呼び出すTargetManagerのメソッドを切り替える
-        if (methodNode.name.equals("getHealth")) {
+        boolean isHealth = matchesAny(methodNode.name, GET_HEALTH_NAMES);
+
+        if (isHealth) {
             toInject.add(new MethodInsnNode(
-                    Opcodes.INVOKESTATIC,
-                    TARGET_MANAGER,
-                    "isHealthTarget",
-                    "(Lnet/minecraft/world/entity/LivingEntity;)Z",
-                    false
+                    Opcodes.INVOKESTATIC, TARGET_MANAGER, "isHealthTarget",
+                    "(Lnet/minecraft/world/entity/LivingEntity;)Z", false
             ));
-        } else { // getMaxHealth
+        } else {
             toInject.add(new MethodInsnNode(
-                    Opcodes.INVOKESTATIC,
-                    TARGET_MANAGER,
-                    "isKillTarget",
-                    // LivingEntityはEntityを継承しているため、Entity型で受け取れる
-                    "(Lnet/minecraft/world/entity/Entity;)Z",
-                    false
+                    Opcodes.INVOKESTATIC, TARGET_MANAGER, "isKillTarget",
+                    "(Lnet/minecraft/world/entity/Entity;)Z", false
             ));
         }
 
-        // 3. 戻り値が false (0) なら、元の処理 (originalCode) にジャンプ
         toInject.add(new JumpInsnNode(Opcodes.IFEQ, originalCode));
-
-        // 4. true (1) の場合の処理: 0.0F を返してメソッドを抜ける
         toInject.add(new InsnNode(Opcodes.FCONST_0));
         toInject.add(new InsnNode(Opcodes.FRETURN));
-
-        // 5. false の場合のジャンプ先（元の処理の先頭）を配置
         toInject.add(originalCode);
 
-        // 6. 生成した命令リストをメソッドの先頭に挿入
         methodNode.instructions.insert(toInject);
+        Udl.LOGGER.info("[UDL] [HealthOverride] Injected condition to {} (isHealth={})", methodNode.name, isHealth);
     }
 }

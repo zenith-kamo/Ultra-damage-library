@@ -2,12 +2,18 @@ package com.zenith.udl.transformer;
 
 import cpw.mods.modlauncher.api.ITransformerActivity;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
+import com.zenith.udl.Udl;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.util.EnumSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UdlTransformerPlugin implements ILaunchPluginService {
+
+    private static final Set<String> LOGGED_CLASSES = ConcurrentHashMap.newKeySet();
+
     @Override
     public String name() {
         return "udl_transformer_plugin";
@@ -15,28 +21,44 @@ public class UdlTransformerPlugin implements ILaunchPluginService {
 
     @Override
     public int processClassWithFlags(Phase phase, ClassNode classNode, Type classType, String reason) {
+        String className = classType.getClassName();
+
         if (!ITransformerActivity.CLASSLOADING_REASON.equals(reason)) {
             return ComputeFlags.NO_REWRITE;
         }
 
-        // BEFORE と AFTER のどちらで呼ばれても、変換ロジックは同じなので統一して処理
-        return UdlTransformer.transform(classNode);
+        int result = UdlTransformer.transform(classNode);
+
+        if (result != ComputeFlags.NO_REWRITE) {
+            Udl.LOGGER.info("[UDL] Successfully transformed class: {} (phase: {})", className, phase);
+        }
+
+        return result;
     }
 
     @Override
     public EnumSet<Phase> handlesClass(Type type, boolean isEmpty) {
         String className = type.getClassName();
 
-        // 自パッケージは変換対象外
         if (className.startsWith("com.zenith.udl.transformer")) {
             return EnumSet.noneOf(Phase.class);
         }
 
-        // 変換対象のクラスを明示的に指定（パフォーマンス向上）
-        // 今後新しいルールを追加する際は、ここに対象クラスを追加する
+        if (className.contains("Minecraft") ||
+                className.contains("LivingEntity") ||
+                className.contains("Entity") ||
+                className.equals("net/minecraft/client/Minecraft") ||
+                className.equals("net/minecraft/world/entity/LivingEntity")) {
+
+            if (LOGGED_CLASSES.add(className)) {
+                Udl.LOGGER.info("[UDL] handlesClass hit - className: {}, internalName: {}",
+                        className, type.getInternalName());
+            }
+        }
+
         if (className.equals("net.minecraft.client.Minecraft") ||
                 className.equals("net.minecraft.world.entity.LivingEntity")) {
-            return EnumSet.of(Phase.AFTER); // AFTER のみで十分
+            return EnumSet.of(Phase.AFTER);
         }
 
         return EnumSet.noneOf(Phase.class);
