@@ -147,7 +147,8 @@ public class MixinProtectionPlugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-        UdlTransformer.transform(UdlTransformer.Phase.PostMixin, targetClass);
+        // 引数を ClassNode のみに変更
+        UdlTransformer.transform(targetClass);
     }
 
     /**

@@ -1,29 +1,29 @@
 package com.zenith.udl.transformer;
 
+import com.zenith.udl.transformer.rules.LivingEntityRule;
 import cpw.mods.modlauncher.LaunchPluginHandler;
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import com.zenith.udl.Udl;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
+import com.zenith.udl.transformer.rules.IMethodTransformerRule;
+import com.zenith.udl.transformer.rules.UpdateTitleRule;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.LdcInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class UdlTransformer {
     private static boolean initialized = false;
 
-    public enum Phase {
-        ILaunchPluginServiceBefore,
-        ITransformationService,
-        PostMixin,
-        ILaunchPluginService,
-        ClassFileTransformer
+    // 拡張性を考慮し、変換ルールをリストで管理する
+    private static final List<IMethodTransformerRule> RULES = new ArrayList<>();
+
+    static {
+        // 今後新しい機能を追加する際は、ここに new YourNewRule() を追加するだけ
+        RULES.add(new UpdateTitleRule());
+        RULES.add(new LivingEntityRule());
     }
 
     public static void ensureLaunchPluginInstalled() {
@@ -51,37 +51,19 @@ public class UdlTransformer {
         initialized = true;
     }
 
-    public static int transform(Phase phase, ClassNode classNode) {
-        if (!classNode.name.equals("net/minecraft/client/Minecraft")) {
-            return ILaunchPluginService.ComputeFlags.NO_REWRITE;
-        }
-
+    /**
+     * ClassNode に対して登録されているすべてのルールを適用します。
+     */
+    public static int transform(ClassNode classNode) {
         boolean modified = false;
-        for (MethodNode method : classNode.methods) {
-            if (!method.name.equals("updateTitle") || !method.desc.equals("()V")) {
-                continue;
-            }
 
-            for (AbstractInsnNode insn = method.instructions.getFirst(); insn != null; insn = insn.getNext()) {
-                if (insn instanceof MethodInsnNode methodInsn) {
-                    boolean isCreateTitle = methodInsn.owner.equals("net/minecraft/client/Minecraft")
-                            && methodInsn.name.equals("createTitle")
-                            && methodInsn.desc.equals("()Ljava/lang/String;");
-
-                    if (isCreateTitle) {
-                        // 1. 直前の命令が ALOAD 0 (this) であることを確認して削除する
-                        AbstractInsnNode prev = methodInsn.getPrevious();
-                        if (prev instanceof VarInsnNode varInsnNode) {
-                            if (varInsnNode.getOpcode() == Opcodes.ALOAD && varInsnNode.var == 0) {
-                                method.instructions.remove(varInsnNode);
-                            }
-                        }
-
-                        method.instructions.set(methodInsn, new LdcInsnNode("まいんくらふと♡ ふぉーじ 1.20.1 - ゆーでぃーえる とらんすふぉーまあー"));
-
-                        modified = true;
-                        break; // 1つのメソッド内で対象を見つけたら抜けてOK
-                    }
+        for (IMethodTransformerRule rule : RULES) {
+            for (var method : classNode.methods) {
+                if (rule.matches(classNode, method)) {
+                    rule.apply(classNode, method);
+                    modified = true;
+                    Udl.LOGGER.info("[UDLTransformer] Applied rule [{}] to {}.{}",
+                            rule.getClass().getSimpleName(), classNode.name, method.name);
                 }
             }
         }
