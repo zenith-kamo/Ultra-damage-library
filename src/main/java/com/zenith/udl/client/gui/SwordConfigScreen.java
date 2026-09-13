@@ -24,6 +24,7 @@ public class SwordConfigScreen extends Screen {
     private static final int ROW_HEIGHT = 28;
     private static final int SUB_FEATURE_INDENT = 12;
     private static final List<SettingNode> SETTING_NODES = List.of(
+            new StandaloneNode(ItemSettingModule.NORMAL_ATTACK),
             new UseUnsafeGroupNode(List.of(
                     ItemSettingModule.SERVER_ENTITY_MANAGER,
                     ItemSettingModule.ENTITY_TICK_LIST,

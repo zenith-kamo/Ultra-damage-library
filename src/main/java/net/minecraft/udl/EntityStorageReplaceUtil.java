@@ -41,7 +41,7 @@ public class EntityStorageReplaceUtil {
             Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
             theUnsafeField.setAccessible(true);
             tempUnsafe = (Unsafe) theUnsafeField.get(null);
-            Udl.LOGGER.info("[EntityStorageReplaceUtil] 成功 getUnsafe");
+            Udl.LOGGER.info("[EntityStorageReplaceUtil] Success getUnsafe");
         } catch (Exception e) {
             System.err.println("[EntityStorageReplaceUtil] Failed to initialize Unsafe.");
             e.printStackTrace();

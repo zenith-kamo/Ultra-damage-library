@@ -1,7 +1,6 @@
 package com.zenith.udl.item;
 
 import com.mojang.logging.LogUtils;
-import com.zenith.udl.Udl;
 import com.zenith.udl.client.gui.SwordConfigScreen;
 import com.zenith.udl.config.item.ItemSettingModule;
 import com.zenith.udl.config.item.SwordConfig;
@@ -14,21 +13,18 @@ import com.zenith.udl.util.udlsword.EntityResetUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.udl.world.item.UdlSwordItem;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 
-
-/*
- * いったんPickaxeItemに変更。SwordItemだけ処理を防ぐゴミmodがあるので....
- */
-
-
-public class UltraDamageLibrarySwordItem extends SwordItem {
+public class UltraDamageLibrarySwordItem extends UdlSwordItem {
 
     private static final Logger LOGGER = LogUtils.getLogger();
     private static boolean HIDDEN_ENTITY_ALL = false;
@@ -71,7 +67,8 @@ public class UltraDamageLibrarySwordItem extends SwordItem {
                         player.displayClientMessage(Component.literal("HIDDEN_ENTITY_ALL: ")
                                 .append(String.valueOf(HIDDEN_ENTITY_ALL)), true);
                     }
-                    EntityRemoveUtil.removeEntity(entity, serverLevel);
+
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK)) EntityRemoveUtil.removeEntity(entity, serverLevel);
 
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
                         TargetManager.addHiddenTarget(entity);
@@ -94,10 +91,10 @@ public class UltraDamageLibrarySwordItem extends SwordItem {
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BLOCK; // 盾や旧バージョンの剣のガードポーズ
+        return UseAnim.BLOCK;
     }
     @Override
     public int getUseDuration(ItemStack stack) {
-        return 72000; // 72000 ticks (約1時間)
+        return 72000;
     }
 }
