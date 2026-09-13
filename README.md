@@ -3,6 +3,7 @@
 
 CosmicRenderer from NOBTG
 
+Todo: https://github.com/users/zenith-kamo/projects/1
 ---
 ## 機能
 ### /udlコマンド
