@@ -1,5 +1,6 @@
 package net.minecraft.udl;
 
+import ca.weblite.objc.Client;
 import com.mojang.logging.LogUtils;
 import com.zenith.udl.Udl;
 import com.zenith.udl.config.item.ItemSettingModule;
@@ -235,58 +236,67 @@ public class EntityStorageReplaceUtil {
             if (SwordConfig.isUseUnsafe(itemStack)) player.sendSystemMessage(Component.literal("This item is under development, uses Unsafe, and is extremely unstable. It has an issue where entities will respawn unless you reload the world.").withStyle(ChatFormatting.RED));
 
             if (SwordConfig.isUseUnsafe(itemStack) && SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.SERVER_ENTITY_MANAGER)) {
-                EntitySectionStorage<Entity> newSectionStorage = createCustomServerSectionStorage(serverLevel);
-                LevelEntityGetter<Entity> newEntityGetter = createCustomServerEntityGetter(serverLevel, newSectionStorage);
-                EntityPersistentStorage<Entity> newPersistentStorage = createCustomServerStorage(serverLevel);
-
-                LOGGER.info("[UDL] Starting field replacement on ServerLevel...");
-                EntityStorageReplaceUtil.replaceServerEntityManagerFields(
-                        serverLevel,
-                        newPersistentStorage,
-                        newSectionStorage,
-                        newEntityGetter
-                );
-                LOGGER.info("[UDL] Field replacement completed successfully.");
-                Udl.LOGGER.info("[Server] EntityManager をダミーに差し替えました");
+                ReplaceServerEntityManager(serverLevel);
             }
 
             if (SwordConfig.isUseUnsafe(itemStack) && SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.ENTITY_TICK_LIST)) {
-                try {
-                    // MCP/SRG名: f_143243_ (entityTickList)
-                    Field tickListField = ServerLevel.class.getDeclaredField("f_143243_");
-                    tickListField.setAccessible(true);
-
-                    // 新しい EntityTickList のインスタンスを作成して差し替え
-                    EntityTickList newTickList = new EntityTickList();
-                    tickListField.set(serverLevel, newTickList);
-
-                } catch (NoSuchFieldException e) {
-                    try {
-                        Field tickListField = ServerLevel.class.getDeclaredField("entityTickList");
-                        tickListField.setAccessible(true);
-                        tickListField.set(serverLevel, new EntityTickList());
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                ReplaceEntityTickList(serverLevel);
             }
         }
-
         if (SwordConfig.isUseUnsafe(itemStack) && level.isClientSide() && level instanceof ClientLevel clientLevel) {
             if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.CLIENT_ENTITY_STORAGE)) {
-                LOGGER.info("[UDL] StorageReplaceItem used on Client.");
-
-                TransientEntitySectionManager<Entity> newClientStorage = createCustomClientStorage(clientLevel);
-
-                EntityStorageReplaceUtil.replaceClientEntityStorage(
-                        clientLevel,
-                        newClientStorage
-                );
-                Udl.LOGGER.info("[Client] entityStorage をダミーに差し替えました。");
+                ReplaceClientEntityStorage(clientLevel);
             }
         }
+    }
+
+    public static void ReplaceEntityTickList(ServerLevel serverLevel) {
+        try {
+            Field tickListField = ServerLevel.class.getDeclaredField("f_143243_");
+            tickListField.setAccessible(true);
+
+            // 新しい EntityTickList のインスタンスを作成して差し替え
+            EntityTickList newTickList = new EntityTickList();
+            tickListField.set(serverLevel, newTickList);
+
+        } catch (NoSuchFieldException e) {
+            try {
+                Field tickListField = ServerLevel.class.getDeclaredField("entityTickList");
+                tickListField.setAccessible(true);
+                tickListField.set(serverLevel, new EntityTickList());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void ReplaceServerEntityManager(ServerLevel serverLevel) {
+        EntitySectionStorage<Entity> newSectionStorage = createCustomServerSectionStorage(serverLevel);
+        LevelEntityGetter<Entity> newEntityGetter = createCustomServerEntityGetter(serverLevel, newSectionStorage);
+        EntityPersistentStorage<Entity> newPersistentStorage = createCustomServerStorage(serverLevel);
+
+        LOGGER.info("[UDL] Starting field replacement on ServerLevel...");
+        EntityStorageReplaceUtil.replaceServerEntityManagerFields(
+                serverLevel,
+                newPersistentStorage,
+                newSectionStorage,
+                newEntityGetter
+        );
+        LOGGER.info("[UDL] Field replacement completed successfully.");
+    }
+
+    public static void ReplaceClientEntityStorage(ClientLevel clientLevel) {
+        LOGGER.info("[UDL] StorageReplaceItem used on Client.");
+
+        TransientEntitySectionManager<Entity> newClientStorage = createCustomClientStorage(clientLevel);
+
+        EntityStorageReplaceUtil.replaceClientEntityStorage(
+                clientLevel,
+                newClientStorage
+        );
+        Udl.LOGGER.info("[Client] entityStorage をダミーに差し替えました。");
     }
 
     private static TransientEntitySectionManager<Entity> createCustomClientStorage(ClientLevel level) {

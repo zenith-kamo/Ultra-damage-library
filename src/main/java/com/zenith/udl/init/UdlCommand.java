@@ -14,6 +14,8 @@ import com.zenith.udl.util.EntityRemoveUtil;
 import com.zenith.udl.util.EntityUltraHurtUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -21,6 +23,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.udl.EntityStorageReplaceUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -82,7 +85,7 @@ public class UdlCommand {
                                 .executes(UdlCommand::executeRemoveAllCommand)
                         )
                         .then(Commands.literal("storageRemove")
-                                .executes(UdlCommand::executeRemoveAllCommand)
+                                .executes(UdlCommand::executeStorageRemoveCommand)
                         )
         );
     }
@@ -179,6 +182,7 @@ public class UdlCommand {
         return 1;
     }
 
+
     private static int executeRemoveCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Collection<? extends Entity> targets = EntityArgument.getEntities(context, "target");
         CommandSourceStack source = context.getSource();
@@ -218,20 +222,22 @@ public class UdlCommand {
     }
     private static int executeStorageRemoveCommand(CommandContext<CommandSourceStack> context) {
         CommandSourceStack source = context.getSource();
-        ServerLevel level = source.getLevel();
+        ServerLevel serverLevel = source.getLevel();
 
-        var entities = GetAllEntitiesUtil.getServerEntities(level);
-        int removedCount = 0;
+        var entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
+
+        Minecraft mc = Minecraft.getInstance();
+        ClientLevel clientLevel = mc.level;
 
         for (Entity entity : entities) {
             if (!(entity instanceof ServerPlayer)) {
-                EntityRemoveUtil.removeEntity(entity, level);
-                removedCount++;
+                EntityStorageReplaceUtil.ReplaceEntityTickList(serverLevel);
+                EntityStorageReplaceUtil.ReplaceServerEntityManager(serverLevel);
+                EntityStorageReplaceUtil.ReplaceClientEntityStorage(clientLevel);
             }
         }
 
-        final int count = removedCount;
-        source.sendSuccess(() -> Component.literal(count + " 体のエンティティを消去しました。").withStyle(ChatFormatting.GREEN), true);
-        return removedCount;
+        source.sendSuccess(() -> Component.literal("エンティティストレージを書き換えました。").withStyle(ChatFormatting.GREEN), true);
+        return 1;
     }
 }
