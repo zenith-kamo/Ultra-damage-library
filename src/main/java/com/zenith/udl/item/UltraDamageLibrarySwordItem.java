@@ -2,11 +2,14 @@ package com.zenith.udl.item;
 
 import com.mojang.logging.LogUtils;
 import com.zenith.udl.client.gui.SwordConfigScreen;
+import com.zenith.udl.client.tooltip.IUDLGlowTooltip;
 import com.zenith.udl.config.item.ItemSettingModule;
 import com.zenith.udl.config.item.SwordConfig;
 import com.zenith.udl.cosmic.client.renderer.CosmicItemExtensions;
+import com.zenith.udl.init.UdlCommand;
 import com.zenith.udl.manager.EntityBanManager;
 import com.zenith.udl.manager.TargetManager;
+import com.zenith.udl.util.ColorUtil;
 import com.zenith.udl.util.EntityRemoveUtil;
 import net.minecraft.udl.EntityStorageReplaceUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
@@ -21,14 +24,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Consumer;
 
-public class UltraDamageLibrarySwordItem extends UdlSwordItem {
+public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlowTooltip {
 
     private static final Logger LOGGER = LogUtils.getLogger();
     private static boolean HIDDEN_ENTITY_ALL = false;
@@ -41,6 +47,43 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem {
                 new Properties()
                         .stacksTo(1)
                         .fireResistant());
+    }
+
+
+    @Override
+    public int udl$getGlowColor() {
+        return 0xC040FF;
+    }
+
+    @Override
+    public int udl$getGradientTop() {
+        return 0xF0060006;
+    }
+
+    @Override
+    public int udl$getGradientBottom() {
+        return 0xF0440A66;
+    }
+
+    @Override
+    public float udl$rotationSpeed() {
+        return 45f; // 度/秒
+    }
+
+    @Override
+    public List<Integer> udl$separatorAfterLines(ItemStack stack) {
+        // アイテム名の直後
+        return List.of(0);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, level, tooltip, flag);
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        return ColorUtil.makeRainbow("Ultra Damage Library Sword");
     }
 
     public static boolean isForceHiddenEntity() {
