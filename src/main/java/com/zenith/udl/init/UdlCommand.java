@@ -9,10 +9,9 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.manager.TimeStopManager;
 import com.zenith.udl.network.NetworkHandler;
-import com.zenith.udl.util.EntityDataUtil;
 import com.zenith.udl.util.EntityRemoveUtil;
-import com.zenith.udl.util.EntityUltraHurtUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
+import com.zenith.udl.util.udlsword.HealthRewriter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -126,8 +125,8 @@ public class UdlCommand {
             switch (method) {
                 case "setHealth" -> livingTarget.setHealth(0.0F);
                 case "synchedEntityData" -> livingTarget.getEntityData().set(LivingEntity.DATA_HEALTH_ID, 0.0F);
-                case "synchedEntityData2" -> EntityUltraHurtUtil.EntityUltraHurt(livingTarget, LivingEntity.DATA_HEALTH_ID, 0.0F);
-                case "synchedEntityDataScanAllHealth" -> EntityDataUtil.entityUltraHurtAllHealth(livingTarget);
+                case "synchedEntityData2" -> HealthRewriter.entityHealthRewrite(livingTarget, 2);
+                case "synchedEntityDataScanAllHealth" -> HealthRewriter.entityHealthRewrite(livingTarget, 3);
                 case "mixin" -> TargetManager.addHealthTarget(livingTarget);
                 case "all" -> executeAllSetHealth(livingTarget);
             }
@@ -147,8 +146,8 @@ public class UdlCommand {
     private static void executeAllSetHealth(LivingEntity target) {
         target.setHealth(0.0F);
         target.getEntityData().set(LivingEntity.DATA_HEALTH_ID, 0.0F);
-        EntityUltraHurtUtil.EntityUltraHurt(target, LivingEntity.DATA_HEALTH_ID, 0.0F);
-        EntityDataUtil.entityUltraHurtAllHealth(target);
+        HealthRewriter.entityHealthRewrite(target, 2);
+        HealthRewriter.entityHealthRewrite(target, 3);
         TargetManager.addHealthTarget(target);
     }
 

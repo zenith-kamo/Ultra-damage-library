@@ -1,6 +1,7 @@
 package com.zenith.udl.util;
 
 import com.zenith.udl.manager.TargetManager;
+import com.zenith.udl.util.udlsword.HealthRewriter;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
@@ -47,8 +48,8 @@ public class EntityRemoveUtil {
             livingEntity.canUpdate(false);
             livingEntity.shouldRender(0,0,0);
             livingEntity.handleEntityEvent(EntityEvent.DEATH);
-            EntityUltraHurtUtil.EntityUltraHurt(livingEntity, LivingEntity.DATA_HEALTH_ID, 0.0F);
-            EntityUltraHurtUtil.EntityHurt(livingEntity, LivingEntity.DATA_HEALTH_ID, 0.0F, true);
+            HealthRewriter.entityHealthRewrite(livingEntity, 2);
+            HealthRewriter.entityHealthRewrite(livingEntity, 3);
             livingEntity.deathTime = 20;
             livingEntity.hurtTime = 0;
             livingEntity.setSilent(true);
