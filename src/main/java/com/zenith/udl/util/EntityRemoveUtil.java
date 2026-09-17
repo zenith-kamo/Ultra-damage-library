@@ -1,12 +1,17 @@
 package com.zenith.udl.util;
 
 import com.zenith.udl.manager.TargetManager;
+import com.zenith.udl.util.udlsword.EntityTeleportUtil;
 import com.zenith.udl.util.udlsword.HealthRewriter;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.entity.PartEntity;
 
@@ -31,13 +36,7 @@ public class EntityRemoveUtil {
         entity.removeVehicle();
 
         // pos
-        entity.setPos(Float.MAX_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
-        entity.xo = Float.MAX_VALUE;
-        entity.yo = Float.MIN_VALUE;
-        entity.zo = Float.MAX_VALUE;
-        entity.xOld = Float.MAX_VALUE;
-        entity.yOld = Float.MIN_VALUE;
-        entity.zOld = Float.MAX_VALUE;
+        EntityTeleportUtil.EntityTeleport(entity, 1);
         // just remove
         entity.onClientRemoval();
         entity.invalidateCaps();
@@ -58,7 +57,12 @@ public class EntityRemoveUtil {
             livingEntity.handleEntityEvent(EntityEvent.DEATH);
             livingEntity.deathTime = Integer.MAX_VALUE;
             // health
+            livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
             livingEntity.getCombatTracker().recordDamage(livingEntity.damageSources().generic(), Float.MAX_VALUE);
+            livingEntity.setAbsorptionAmount(0.0F);
+            livingEntity.actuallyHurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
+            livingEntity.lastHurt = Float.MAX_VALUE;
+            livingEntity.dead = true;
             livingEntity.setHealth(0.0F);
             HealthRewriter.entityHealthRewrite(livingEntity, 2);
             HealthRewriter.entityHealthRewrite(livingEntity, 3);

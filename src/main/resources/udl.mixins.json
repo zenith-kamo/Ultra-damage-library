@@ -8,17 +8,18 @@
   "priority": -2147483647,
   "mixins": [
     "LivingEntityMixin",
-    "EntityTickMixin",
-    "MobAiMixin",
-    "BlockEntityMixin",
-    "MobAiMixin",
-    "ParticleEngineMixin",
-    "ServerLevelMixin",
-    "GoalSelectorMixin",
-    "TickMixin",
+    "timestop.EntityTickMixin",
+    "timestop.MobAiMixin",
+    "timestop.BlockEntityMixin",
+    "timestop.MobAiMixin",
+    "timestop.ParticleEngineMixin",
+    "timestop.ServerLevelMixin",
+    "timestop.GoalSelectorMixin",
+    "timestop.TickMixin",
     "cosmic.ItemRendererMixin",
     "cosmic.ItemInHandRendererMixin",
-    "sword.EntityRenderDispatcherMixin"
+    "sword.EntityRenderDispatcherMixin",
+    "common.EntityPosMixin"
   ],
   "client": [
   ],

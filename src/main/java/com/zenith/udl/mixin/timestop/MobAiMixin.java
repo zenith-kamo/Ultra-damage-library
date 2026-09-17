@@ -1,4 +1,4 @@
-package com.zenith.udl.mixin;
+package com.zenith.udl.mixin.timestop;
 
 import com.zenith.udl.manager.TimeStopManager;
 import net.minecraft.world.entity.Mob;
