@@ -26,6 +26,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.UDL_SWORD.get());
                         output.accept(ModItems.POCKET_WATCH.get());
                         output.accept(ModItems.DEBUG_ITEM.get());
+                        output.accept(ModItems.DEBUG2_ITEM.get());
                     })
                     .build());
 

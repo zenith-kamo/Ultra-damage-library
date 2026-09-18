@@ -1,7 +1,8 @@
 package com.zenith.udl.init;
 
 import com.zenith.udl.Udl;
-import com.zenith.udl.item.DebugItem;
+import com.zenith.udl.item.debug.Debug2Item;
+import com.zenith.udl.item.debug.DebugItem;
 import com.zenith.udl.item.PocketWatchItem;
 import com.zenith.udl.item.UltraDamageLibrarySwordItem;
 import net.minecraft.world.item.Item;
@@ -19,4 +20,6 @@ public class ModItems {
             ITEMS.register("pocket_watch", () -> new PocketWatchItem(new Item.Properties()));
     public static final RegistryObject<Item> DEBUG_ITEM =
             ITEMS.register("debug", () -> new DebugItem(new Item.Properties()));
+    public static final RegistryObject<Item> DEBUG2_ITEM =
+            ITEMS.register("debug2", () -> new Debug2Item(new Item.Properties()));
 }
