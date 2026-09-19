@@ -7,18 +7,18 @@ import net.minecraft.world.level.ChunkPos;
 
 public class EntityTeleportUtil {
     public static void EntityTeleport(Entity entity) {
-        entity.setPos(Float.MAX_VALUE, -Float.MIN_VALUE, Float.MAX_VALUE);
-        entity.setPosRaw(Float.MAX_VALUE, -Float.MIN_VALUE, Float.MAX_VALUE);
-        entity.teleportTo(Float.MAX_VALUE, -Float.MIN_VALUE, Float.MAX_VALUE);
-        entity.moveTo(Float.MAX_VALUE, -Float.MIN_VALUE, Float.MAX_VALUE);
-        entity.blockPosition = new BlockPos(Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        entity.setPos(9999999, -9999999, 9999999);
+        entity.setPosRaw(9999999, -9999999, 9999999);
+        entity.teleportTo(9999999, -9999999, 9999999);
+        entity.moveTo(9999999, -9999999, 9999999);
+        entity.blockPosition = new BlockPos(9999999, -9999999, 9999999);
         entity.feetBlockState = null;
-        entity.xo = Float.MAX_VALUE;
-        entity.yo = -Float.MIN_VALUE;
-        entity.zo = Float.MAX_VALUE;
-        entity.xOld = Float.MAX_VALUE;
-        entity.yOld = -Float.MIN_VALUE;
-        entity.zOld = Float.MAX_VALUE;
+        entity.xo = 9999999;
+        entity.yo = -9999999;
+        entity.zo = 9999999;
+        entity.xOld = 9999999;
+        entity.yOld = -9999999;
+        entity.zOld = 9999999;
         entity.reapplyPosition();
         TargetManager.addTpTarget(entity);
     }
