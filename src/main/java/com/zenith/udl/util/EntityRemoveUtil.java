@@ -37,7 +37,7 @@ public class EntityRemoveUtil {
         entity.removeVehicle();
 
         // pos
-//        EntityTeleportUtil.EntityTeleport(entity);
+        EntityTeleportUtil.EntityTeleport(entity);
         // just remove
         entity.onClientRemoval();
         entity.invalidateCaps();

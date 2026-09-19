@@ -13,7 +13,6 @@ public class EntityTeleportUtil {
         entity.moveTo(Float.MAX_VALUE, -Float.MIN_VALUE, Float.MAX_VALUE);
         entity.blockPosition = new BlockPos(Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
         entity.feetBlockState = null;
-        entity.chunkPosition = new ChunkPos(Integer.MAX_VALUE, Integer.MAX_VALUE);
         entity.xo = Float.MAX_VALUE;
         entity.yo = -Float.MIN_VALUE;
         entity.zo = Float.MAX_VALUE;
