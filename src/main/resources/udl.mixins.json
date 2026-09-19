@@ -19,7 +19,8 @@
     "cosmic.ItemRendererMixin",
     "cosmic.ItemInHandRendererMixin",
     "sword.EntityRenderDispatcherMixin",
-    "common.EntityPosMixin"
+    "sword.LivingEntityRendererMixin",
+    "util.EntityPosMixin"
   ],
   "client": [
   ],

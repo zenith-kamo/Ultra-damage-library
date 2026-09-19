@@ -44,7 +44,6 @@ public class UDLProtector {
             );
         }
 
-        // Pig2のクラス名判定を回避するための匿名リスナー
         this.anonymousListener = new Object() {
 
             @net.minecraftforge.eventbus.api.SubscribeEvent

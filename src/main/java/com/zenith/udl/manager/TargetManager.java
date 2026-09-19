@@ -11,7 +11,6 @@ public class TargetManager {
     // LivingEntityのみ
     private static final Set<LivingEntity> HEALTH_TARGETS =
             Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
-
     // Entity全般
     private static final Set<Entity> KILL_TARGETS =
             Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
@@ -20,6 +19,9 @@ public class TargetManager {
             Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     private static final Set<Entity> TP_TARGETS =
+            Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+
+    private static final Set<LivingEntity> POSE_TARGETS =
             Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     public static void addHealthTarget(LivingEntity entity) {
@@ -102,5 +104,25 @@ public class TargetManager {
 
     public static Set<Entity> getTpTargets() {
         return TP_TARGETS;
+    }
+
+    public static void addPoseTarget(LivingEntity livingEntity) {
+        if (livingEntity != null && !livingEntity.isRemoved()) {
+            POSE_TARGETS.add(livingEntity);
+        }
+    }
+
+    public static void removePoseTarget(LivingEntity livingEntity) {
+        if (livingEntity != null) {
+            POSE_TARGETS.remove(livingEntity);
+        }
+    }
+
+    public static boolean isPoseTarget(LivingEntity livingEntity) {
+        return livingEntity != null && !livingEntity.isRemoved() && POSE_TARGETS.contains(livingEntity);
+    }
+
+    public static Set<LivingEntity> getPoseTargets() {
+        return POSE_TARGETS;
     }
 }

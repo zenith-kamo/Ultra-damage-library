@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -23,19 +24,17 @@ public class Debug2Item extends Item{
         ItemStack stack = player.getItemInHand(hand);
         if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
             Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
-            if (player.isShiftKeyDown()) {
                 for (Entity entity : entities) {
                     if (entity != null && (entity != player)) {
-                        TargetManager.addTpTarget(entity);
+                        if (entity instanceof LivingEntity livingEntity) {
+                            TargetManager.addPoseTarget(livingEntity);
+                            livingEntity.hurtMarked = true;
+                            livingEntity.hurtTime = 1;
+                            livingEntity.hurtDuration = Integer.MAX_VALUE;
+                        }
+
                     }
                 }
-            } else {
-                for (Entity entity : entities) {
-                    if (entity != null && (entity != player)) {
-                        EntityTeleportUtil.EntityTeleport(entity);
-                    }
-                }
-            }
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }

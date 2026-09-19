@@ -1,5 +1,7 @@
 {
   "item.udl.pocket_watch": "Zenith's pocket watch",
   "item.udl.ultra_damage_library_sword": "Ultra Damage Sword",
+  "item.udl.debug" : "Spawn pig",
+  "item.udl.debug2" : "Force Pose",
   "creativetab.udl_tab": "Ultra Damage Library"
 }

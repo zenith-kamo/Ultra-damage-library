@@ -21,6 +21,7 @@ public class EntityRemoveUtil {
             removeEntity(partEntity.getParent(), serverLevel);
             return;
         }
+        if (entity instanceof LivingEntity livingEntity) TargetManager.addPoseTarget(livingEntity);
         // other
         entity.setInvulnerable(false);
         entity.invulnerableTime = 0;
@@ -36,7 +37,7 @@ public class EntityRemoveUtil {
         entity.removeVehicle();
 
         // pos
-        EntityTeleportUtil.EntityTeleport(entity);
+//        EntityTeleportUtil.EntityTeleport(entity);
         // just remove
         entity.onClientRemoval();
         entity.invalidateCaps();
@@ -60,7 +61,7 @@ public class EntityRemoveUtil {
             livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
             livingEntity.getCombatTracker().recordDamage(livingEntity.damageSources().generic(), Float.MAX_VALUE);
             livingEntity.setAbsorptionAmount(0.0F);
-            livingEntity.actuallyHurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
+//            livingEntity.actuallyHurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
             livingEntity.lastHurt = Float.MAX_VALUE;
             livingEntity.dead = true;
             livingEntity.setHealth(0.0F);
