@@ -11,6 +11,7 @@ import com.zenith.udl.manager.TimeStopManager;
 import com.zenith.udl.network.NetworkHandler;
 import com.zenith.udl.util.EntityRemoveUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
+import com.zenith.udl.util.SuicideUtil;
 import com.zenith.udl.util.udlsword.HealthRewriter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -85,6 +86,11 @@ public class UdlCommand {
                         )
                         .then(Commands.literal("storageRemove")
                                 .executes(UdlCommand::executeStorageRemoveCommand)
+                        )
+                        .then(Commands.literal("suicide")
+                                .then(Commands.argument("player", EntityArgument.player())
+                                        .executes(UdlCommand::executeSuicideCommand)
+                                )
                         )
         );
     }
@@ -237,6 +243,16 @@ public class UdlCommand {
         }
 
         source.sendSuccess(() -> Component.literal("エンティティストレージを書き換えました。").withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+
+    private static int executeSuicideCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer targetPlayer = EntityArgument.getPlayer(context, "player");
+        CommandSourceStack source = context.getSource();
+
+        SuicideUtil.suicide(targetPlayer);
+
+        source.sendSuccess(() -> Component.literal(targetPlayer.getScoreboardName() + " をキルしました。").withStyle(ChatFormatting.GREEN), true);
         return 1;
     }
 }

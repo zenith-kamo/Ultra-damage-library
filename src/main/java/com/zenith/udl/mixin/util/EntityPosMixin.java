@@ -14,7 +14,7 @@ public abstract class EntityPosMixin {
     private void onGetX(CallbackInfoReturnable<Double> cir) {
         Entity entity = (Entity) (Object) this;
         if (TargetManager.isTpTarget(entity)) {
-            cir.setReturnValue(Double.MAX_VALUE);
+            cir.setReturnValue(9999999.0);
         }
     }
 
@@ -22,7 +22,7 @@ public abstract class EntityPosMixin {
     private void onGetY(CallbackInfoReturnable<Double> cir) {
         Entity entity = (Entity) (Object) this;
         if (TargetManager.isTpTarget(entity)) {
-            cir.setReturnValue(-Double.MIN_VALUE);
+            cir.setReturnValue(-9999999.0);
         }
     }
 
@@ -30,7 +30,7 @@ public abstract class EntityPosMixin {
     private void onGetZ(CallbackInfoReturnable<Double> cir) {
         Entity entity = (Entity) (Object) this;
         if (TargetManager.isTpTarget(entity)) {
-            cir.setReturnValue(Double.MAX_VALUE);
+            cir.setReturnValue(9999999.0);
         }
     }
 }
