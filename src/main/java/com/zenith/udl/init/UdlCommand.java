@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.zenith.udl.manager.EntityBanManager;
 import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.manager.TimeStopManager;
 import com.zenith.udl.network.NetworkHandler;
@@ -91,6 +92,9 @@ public class UdlCommand {
                                 .then(Commands.argument("player", EntityArgument.player())
                                         .executes(UdlCommand::executeSuicideCommand)
                                 )
+                        )
+                        .then(Commands.literal("clearList")
+                                .executes(UdlCommand::executeClearListCommand)
                         )
         );
     }
@@ -253,6 +257,17 @@ public class UdlCommand {
         SuicideUtil.suicide(targetPlayer);
 
         source.sendSuccess(() -> Component.literal(targetPlayer.getScoreboardName() + " をキルしました。").withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+    private static int executeClearListCommand(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        TargetManager.clearPoseTarget();
+        TargetManager.clearKillTarget();
+        TargetManager.clearHealthTarget();
+        TargetManager.clearHiddenTarget();
+        TargetManager.clearTpTarget();
+        EntityBanManager.clearBans();
+        source.sendSuccess(() -> Component.literal("TargetManagerのリストを消去しました。").withStyle(ChatFormatting.GREEN), true);
         return 1;
     }
 }

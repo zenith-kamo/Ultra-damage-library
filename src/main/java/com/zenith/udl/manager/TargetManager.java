@@ -36,6 +36,10 @@ public class TargetManager {
         }
     }
 
+    public static void clearHealthTarget() {
+        HEALTH_TARGETS.clear();
+    }
+
     public static boolean isHealthTarget(LivingEntity entity) {
         return entity != null && !entity.isRemoved() && HEALTH_TARGETS.contains(entity);
     }
@@ -55,6 +59,10 @@ public class TargetManager {
         if (entity != null) {
             KILL_TARGETS.remove(entity);
         }
+    }
+
+    public static void clearKillTarget() {
+        KILL_TARGETS.clear();
     }
 
     public static boolean isKillTarget(Entity entity) {
@@ -78,6 +86,10 @@ public class TargetManager {
         }
     }
 
+    public static void clearHiddenTarget() {
+        HIDDEN_TARGETS.clear();
+    }
+
     public static boolean isHiddenTarget(Entity entity) {
         return entity != null && !entity.isRemoved() && HIDDEN_TARGETS.contains(entity);
     }
@@ -98,6 +110,10 @@ public class TargetManager {
         }
     }
 
+    public static void clearTpTarget() {
+        TP_TARGETS.clear();
+    }
+
     public static boolean isTpTarget(Entity entity) {
         return entity != null && !entity.isRemoved() && TP_TARGETS.contains(entity);
     }
@@ -116,6 +132,10 @@ public class TargetManager {
         if (livingEntity != null) {
             POSE_TARGETS.remove(livingEntity);
         }
+    }
+
+    public static void clearPoseTarget() {
+        POSE_TARGETS.clear();
     }
 
     public static boolean isPoseTarget(LivingEntity livingEntity) {
