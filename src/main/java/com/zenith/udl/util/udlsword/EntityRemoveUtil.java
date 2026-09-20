@@ -1,17 +1,11 @@
-package com.zenith.udl.util;
+package com.zenith.udl.util.udlsword;
 
 import com.zenith.udl.manager.TargetManager;
-import com.zenith.udl.util.udlsword.EntityTeleportUtil;
-import com.zenith.udl.util.udlsword.HealthRewriter;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.entity.PartEntity;
 
@@ -49,6 +43,8 @@ public class EntityRemoveUtil {
         entity.onRemovedFromWorld();
         entity.removalReason = Entity.RemovalReason.DISCARDED;
         serverLevel.getChunkSource().removeEntity(entity);
+        EntityRemoveHelper.entityRemoveFromChunkMap(entity, serverLevel);
+        EntityRemoveHelper.entityRemoveFromManager(entity, serverLevel);
         if (entity instanceof LivingEntity livingEntity) {
             // visual
             livingEntity.setSilent(true);

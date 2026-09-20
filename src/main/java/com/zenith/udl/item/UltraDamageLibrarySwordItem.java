@@ -6,11 +6,11 @@ import com.zenith.udl.client.tooltip.IUDLGlowTooltip;
 import com.zenith.udl.config.item.ItemSettingModule;
 import com.zenith.udl.config.item.SwordConfig;
 import com.zenith.udl.cosmic.client.renderer.CosmicItemExtensions;
-import com.zenith.udl.init.UdlCommand;
 import com.zenith.udl.manager.EntityBanManager;
 import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.util.ColorUtil;
-import com.zenith.udl.util.EntityRemoveUtil;
+import com.zenith.udl.util.udlsword.EntityRemoveHelper;
+import com.zenith.udl.util.udlsword.EntityRemoveUtil;
 import net.minecraft.udl.EntityStorageReplaceUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
 import com.zenith.udl.util.udlsword.EntityResetUtil;
@@ -135,6 +135,15 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlo
             }
         }
         return InteractionResultHolder.consume(itemStack);
+    }
+
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+        if (!entity.level().isClientSide && entity.level() instanceof ServerLevel serverLevel) {
+            EntityRemoveHelper.entityRemoveFromChunkMap(entity, serverLevel);
+            EntityRemoveHelper.entityRemoveFromManager(entity, serverLevel);
+        }
+        return true;
     }
 
 

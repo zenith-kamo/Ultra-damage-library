@@ -10,7 +10,7 @@ import com.zenith.udl.manager.EntityBanManager;
 import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.manager.TimeStopManager;
 import com.zenith.udl.network.NetworkHandler;
-import com.zenith.udl.util.EntityRemoveUtil;
+import com.zenith.udl.util.udlsword.EntityRemoveUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
 import com.zenith.udl.util.SuicideUtil;
 import com.zenith.udl.util.udlsword.HealthRewriter;
