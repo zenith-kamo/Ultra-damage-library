@@ -9,12 +9,13 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.Level;
 
 public class PocketWatchItem extends Item {
 
-    public PocketWatchItem(Properties properties) {
-        super(properties);
+    public PocketWatchItem() {
+        super(new Properties().stacksTo(1).fireResistant());
     }
 
     @Override
