@@ -129,9 +129,12 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlo
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
                         TargetManager.addHiddenTarget(entity);
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK)) {
-                        EntityRemoveUtil.entityRemoveFromManager(entity, serverLevel);
-                        EntityRemoveUtil.entityRemoveFromChunkMap(entity, serverLevel);
-                        EntityRemoveUtil.removeEntity(entity, serverLevel);
+                        for (int i = 0; i < 10; i++) {
+                            EntityRemoveUtil.entityRemoveFromManager(entity, serverLevel);
+                            EntityRemoveUtil.entityRemoveFromChunkMap(entity, serverLevel);
+                            EntityRemoveUtil.removeEntity(entity, serverLevel);
+                        }
+
                     }
 
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
@@ -162,13 +165,16 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlo
                 }
                 EXECUTOR.schedule(() -> {
                     if (entity != null) {
-                        TargetManager.addKillTarget(entity);
-                        TargetManager.addHealthTarget((LivingEntity) entity);
-                        TargetManager.addHiddenTarget(entity);
-                        TargetManager.addTpTarget(entity);
-                        EntityRemoveUtil.removeEntity(e, serverLevel);
-                        EntityRemoveUtil.entityRemoveFromChunkMap(e, serverLevel);
-                        EntityRemoveUtil.entityRemoveFromManager(e, serverLevel);
+                        for (int i = 0; i < 10; i++) {
+                            TargetManager.addKillTarget(entity);
+                            TargetManager.addHealthTarget((LivingEntity) entity);
+                            TargetManager.addHiddenTarget(entity);
+                            TargetManager.addTpTarget(entity);
+                            EntityRemoveUtil.removeEntity(e, serverLevel);
+                            EntityRemoveUtil.entityRemoveFromChunkMap(e, serverLevel);
+                            EntityRemoveUtil.entityRemoveFromManager(e, serverLevel);
+                        }
+
                     }
                 }, 1, TimeUnit.SECONDS);
             } else {
