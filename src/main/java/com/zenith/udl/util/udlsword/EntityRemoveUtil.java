@@ -25,6 +25,7 @@ import java.util.Set;
 
 public class EntityRemoveUtil {
     public static void removeEntity(Entity entity, ServerLevel serverLevel) {
+        if (entity == null) return;
         if (entity instanceof PartEntity<?> partEntity) {
             removeEntity(partEntity.getParent(), serverLevel);
             return;
@@ -84,6 +85,7 @@ public class EntityRemoveUtil {
     }
 
     public static void entityRemoveFromChunkMap(Entity entity, ServerLevel serverLevel) {
+        if (entity == null) return;
         ChunkMap chunkMap = serverLevel.getChunkSource().chunkMap;
 
         // 対象がプレイヤーの場合は、他の全エンティティの追跡リストから対象プレイヤーを除外
@@ -123,6 +125,7 @@ public class EntityRemoveUtil {
     }
 
     public static void playerRemoveFromChunkMap(Object entityTrackingObject, ServerPlayer player) throws Exception {
+        if (player == null) return;
         try {
             var method = entityTrackingObject.getClass().getDeclaredMethod("removePlayer", ServerPlayer.class);
             method.setAccessible(true);
@@ -135,6 +138,7 @@ public class EntityRemoveUtil {
     }
 
     public static void entityRemoveFromManager(Entity entity, ServerLevel serverLevel) {
+        if (entity == null) return;
         PersistentEntitySectionManager<Entity> entitySectionManager = serverLevel.entityManager;
         EntitySection<Entity> entitySection = entitySectionManager.sectionStorage.getSection(SectionPos.asLong(entity.blockPosition()));
         entitySectionManager.visibleEntityStorage.byUuid.remove(entity.getUUID());
