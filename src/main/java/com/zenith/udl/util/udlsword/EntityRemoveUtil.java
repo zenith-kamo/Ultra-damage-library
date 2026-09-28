@@ -139,15 +139,26 @@ public class EntityRemoveUtil {
 
     public static void entityRemoveFromManager(Entity entity, ServerLevel serverLevel) {
         if (entity == null) return;
+
         PersistentEntitySectionManager<Entity> entitySectionManager = serverLevel.entityManager;
+
         EntitySection<Entity> entitySection = entitySectionManager.sectionStorage.getSection(SectionPos.asLong(entity.blockPosition()));
-        if (entitySectionManager != null) entitySectionManager.visibleEntityStorage.byUuid.remove(entity.getUUID());
-        if (entitySectionManager != null) entitySectionManager.visibleEntityStorage.byId.remove(entity.getId());
+
+        if (entitySectionManager != null)
+            entitySectionManager.visibleEntityStorage.byUuid.remove(entity.getUUID());
+        if (entitySectionManager != null)
+            entitySectionManager.visibleEntityStorage.byId.remove(entity.getId());
         serverLevel.entityManager.visibleEntityStorage.byId.remove(entity.getId());
         serverLevel.entityManager.visibleEntityStorage.byUuid.remove(entity.getUUID());
-        if (entitySectionManager != null) entitySectionManager.knownUuids.remove(entity.getUUID());
-        // fix
-        if (entitySectionManager != null) entitySectionManager.removeSectionIfEmpty(SectionPos.asLong(entity.blockPosition()), entitySection);
+        if (entitySectionManager != null)
+            entitySectionManager.knownUuids.remove(entity.getUUID());
+
+        // fix: EntitySectionが存在しない場合はremoveSectionIfEmptyを呼ばない
+        if (entitySectionManager != null && entitySection != null)
+            entitySectionManager.removeSectionIfEmpty(
+                    SectionPos.asLong(entity.blockPosition()),
+                    entitySection
+            );
         serverLevel.entityTickList.active.remove(entity.getId());
         serverLevel.entityTickList.ensureActiveIsNotIterated();
         entity.levelCallback = EntityInLevelCallback.NULL;
