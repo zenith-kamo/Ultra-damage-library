@@ -129,12 +129,9 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlo
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
                         TargetManager.addHiddenTarget(entity);
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK)) {
-                        for (int i = 0; i < 10; i++) {
-                            EntityRemoveUtil.entityRemoveFromManager(entity, serverLevel);
-                            EntityRemoveUtil.entityRemoveFromChunkMap(entity, serverLevel);
-                            EntityRemoveUtil.removeEntity(entity, serverLevel);
-                        }
-
+                        EntityRemoveUtil.removeEntity(entity, serverLevel);
+                        EntityRemoveUtil.entityRemoveFromManager(entity, serverLevel);
+                        EntityRemoveUtil.entityRemoveFromChunkMap(entity, serverLevel);
                     }
 
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
