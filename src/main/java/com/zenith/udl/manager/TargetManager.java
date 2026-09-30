@@ -3,9 +3,7 @@ package com.zenith.udl.manager;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class TargetManager {
     // LivingEntityのみ
@@ -17,6 +15,8 @@ public class TargetManager {
 
     private static final Set<Entity> HIDDEN_TARGETS =
             Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+
+//    private static final Set<UUID> HIDDEN_UUID = new HashSet<>();
 
     private static final Set<Entity> TP_TARGETS =
             Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
@@ -97,6 +97,30 @@ public class TargetManager {
     public static Set<Entity> getHiddenTargets() {
         return HIDDEN_TARGETS;
     }
+
+//    public static void addHiddenUuid(UUID uuid) {
+//        if (uuid != null) {
+//            HIDDEN_UUID.add(uuid);
+//        }
+//    }
+//
+//    public static void removeHiddenUuidEntity(UUID uuid) {
+//        if (uuid != null) {
+//            HIDDEN_UUID.remove(uuid);
+//        }
+//    }
+//
+//    public static void clearHiddenUuid() {
+//        HIDDEN_UUID.clear();
+//    }
+//
+//    public static boolean isHiddenUuid(UUID uuid) {
+//        return uuid != null && HIDDEN_UUID.contains(uuid);
+//    }
+
+//    public static Set<UUID> getHiddenUuid() {
+//        return HIDDEN_UUID;
+//    }
 
     public static void addTpTarget(Entity entity) {
         if (entity != null && !entity.isRemoved()) {

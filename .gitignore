@@ -17,6 +17,9 @@ out
 build
 .gradle
 
+# pro sources
+/src/main/java/com/zenith/udl/pro/
+
 # other
 eclipse
 run

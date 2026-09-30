@@ -10,8 +10,17 @@ plugins {
 version = mod_version
 group = mod_group_id
 
+def runClientProBuild = gradle.startParameter.taskNames.any {
+    it == 'runClient' || it.endsWith(':runClient')
+}
+def proBuild = runClientProBuild || providers.gradleProperty('udlPro').map { it.toBoolean() }.getOrElse(false)
+
 base {
-    archivesName = mod_id
+    archivesName = proBuild ? "${mod_id}-pro" : mod_id
+}
+
+if (!proBuild) {
+    sourceSets.main.java.exclude 'com/zenith/udl/pro/**'
 }
 
 
@@ -87,10 +96,11 @@ repositories {
                 loader_version_range: loader_version_range,
                 mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
                 mod_authors         : mod_authors, mod_description: mod_description,
+                udl_pro_build       : proBuild.toString(),
         ]
         inputs.properties replaceProperties
 
-        filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        filesMatching(['META-INF/mods.toml', 'pack.mcmeta', 'udl.properties']) {
             expand replaceProperties + [project: project]
         }
     }

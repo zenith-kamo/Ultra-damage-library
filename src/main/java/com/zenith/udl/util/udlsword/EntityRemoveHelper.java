@@ -1,5 +1,6 @@
 package com.zenith.udl.util.udlsword;
 
+import com.zenith.udl.manager.TargetManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
@@ -14,9 +15,10 @@ import net.minecraft.world.level.entity.EntitySection;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class EntityRemoveHelper {
 
@@ -47,5 +49,4 @@ public class EntityRemoveHelper {
         seenByField.setAccessible(true);
         return (Set<ServerPlayerConnection>) seenByField.get(entityTrackingObject);
     }
-
 }

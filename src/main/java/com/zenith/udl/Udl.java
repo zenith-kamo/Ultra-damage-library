@@ -18,12 +18,17 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Udl.MODID)
 public class Udl {
 
     // Define mod id in a common place for everything to reference
     public static final String MODID = "udl";
+    public static final boolean PRO_BUILD = loadProBuild();
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
     public static ResourceLocation rl(String path) {
@@ -31,6 +36,20 @@ public class Udl {
     }
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create();
+
+    private static boolean loadProBuild() {
+        try (InputStream input = Udl.class.getResourceAsStream("/udl.properties")) {
+            if (input == null) {
+                return false;
+            }
+            Properties properties = new Properties();
+            properties.load(input);
+            return Boolean.parseBoolean(properties.getProperty("pro_build", "false"));
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not read build variant", e);
+        }
+    }
+
     public Udl() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         // Register the commonSetup method for modloading

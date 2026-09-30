@@ -24,6 +24,9 @@ public class ModCreativeTabs {
                     // タブに追加するアイテムを設定
                     .displayItems((displayParameters, output) -> {
                         output.accept(ModItems.UDL_SWORD.get());
+                        if (ModItems.PRO_SWORD != null) {
+                            output.accept(ModItems.PRO_SWORD.get());
+                        }
                         output.accept(ModItems.POCKET_WATCH.get());
                         output.accept(ModItems.DEBUG_ITEM.get());
                         output.accept(ModItems.DEBUG2_ITEM.get());
