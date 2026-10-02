@@ -2,6 +2,7 @@ package com.zenith.udl.item.debug;
 
 import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.util.GetAllEntitiesUtil;
+import com.zenith.udl.util.udlsword.EntityRemoveHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -25,6 +26,7 @@ public class Debug3Item extends Item{
             Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
             for (Entity entity : entities) {
                 if (entity != null && (entity != player)) {
+                    EntityRemoveHelper.wipeEntityData(entity);
                 }
             }
         }

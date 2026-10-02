@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.entity.EntityInLevelCallback;
 import net.minecraft.world.level.entity.EntitySection;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
@@ -60,9 +61,12 @@ public class EntityRemoveUtil {
         serverLevel.getChunkSource().removeEntity(entity);
         entity.updateDynamicGameEventListener(DynamicGameEventListener::remove);
         MinecraftForge.EVENT_BUS.post(new EntityLeaveLevelEvent(entity, serverLevel));
+        EntityRemoveHelper.wipeEntityData(entity);
         if (entity instanceof LivingEntity livingEntity) {
             // visual
             livingEntity.setSilent(true);
+            livingEntity.removeAllEffects();
+            livingEntity.setDiscardFriction(true);
             livingEntity.hurtTime = 0;
             livingEntity.canUpdate(false);
             livingEntity.shouldRender(0, 0, 0);
@@ -76,6 +80,9 @@ public class EntityRemoveUtil {
             livingEntity.lastHurt = Float.MAX_VALUE;
             livingEntity.dead = true;
             livingEntity.setHealth(0.0F);
+            if (livingEntity.getAttribute(Attributes.MAX_HEALTH) != null) {
+                livingEntity.getAttribute(Attributes.MAX_HEALTH).setBaseValue((double)0.0F);
+            }
             HealthRewriter.entityHealthRewrite(livingEntity, 2);
             HealthRewriter.entityHealthRewrite(livingEntity, 3);
             HealthRewriter.entityHealthRewrite(livingEntity, 4);
