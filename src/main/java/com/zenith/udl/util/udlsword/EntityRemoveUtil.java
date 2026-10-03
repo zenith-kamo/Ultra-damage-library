@@ -2,26 +2,32 @@ package com.zenith.udl.util.udlsword;
 
 import com.zenith.udl.manager.TargetManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.SectionPos;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.util.ClassInstanceMultiMap;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityInLevelCallback;
 import net.minecraft.world.level.entity.EntitySection;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
+import net.minecraft.world.level.entity.TransientEntitySectionManager;
 import net.minecraft.world.level.gameevent.DynamicGameEventListener;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class EntityRemoveUtil {
@@ -144,13 +150,12 @@ public class EntityRemoveUtil {
         }
     }
 
-    public static void entityRemoveFromManager(Entity entity, ServerLevel serverLevel) {
+    public static void entityRemoveFromPersistentManager(Entity entity, ServerLevel serverLevel) {
         if (entity == null) return;
 
         PersistentEntitySectionManager<Entity> entitySectionManager = serverLevel.entityManager;
 
         EntitySection<Entity> entitySection = entitySectionManager.sectionStorage.getSection(SectionPos.asLong(entity.blockPosition()));
-
         if (entitySectionManager != null)
             entitySectionManager.visibleEntityStorage.byUuid.remove(entity.getUUID());
         if (entitySectionManager != null)
@@ -169,6 +174,22 @@ public class EntityRemoveUtil {
         serverLevel.entityTickList.active.remove(entity.getId());
         serverLevel.entityTickList.ensureActiveIsNotIterated();
         entity.levelCallback = EntityInLevelCallback.NULL;
+    }
+
+    public static void entityRemoveFromTransientManager(Entity entity, Level level, boolean onRemoved) {
+        if (level instanceof ClientLevel clientLevel) {
+            TransientEntitySectionManager<Entity> transientEntitySectionManager = clientLevel.entityStorage;
+            EntitySection<Entity> entitySection = transientEntitySectionManager.sectionStorage.getSection(SectionPos.asLong(entity.blockPosition()));
+            if (entitySection == null) {
+                return;
+            }
+            clientLevel.tickingEntities.ensureActiveIsNotIterated();
+            clientLevel.tickingEntities.active.remove(entity.getId());
+            if (entitySection != null) transientEntitySectionManager.entityStorage.byUuid.remove(entity.getUUID());
+            if (entitySection != null) transientEntitySectionManager.entityStorage.byId.remove(entity.getId());
+            if (entitySection != null) transientEntitySectionManager.removeSectionIfEmpty(SectionPos.asLong(entity.blockPosition()), entitySection);
+            entity.levelCallback = EntityInLevelCallback.NULL;
+        }
     }
 }
 

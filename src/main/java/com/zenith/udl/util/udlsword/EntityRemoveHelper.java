@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 public class EntityRemoveHelper {
 
     private static final UUID DUMMY_UUID = UUID.randomUUID();
-    // リフレクションヘルパー
 
     @SuppressWarnings("unchecked")
     public static Int2ObjectMap<Object> getEntityMap(ChunkMap chunkMap) throws Exception {

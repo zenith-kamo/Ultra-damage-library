@@ -130,12 +130,21 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlo
                         TargetManager.addHiddenTarget(entity);
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK)) {
                         EntityRemoveUtil.removeEntity(entity, serverLevel);
-                        EntityRemoveUtil.entityRemoveFromManager(entity, serverLevel);
+                        EntityRemoveUtil.entityRemoveFromPersistentManager(entity, serverLevel);
                         EntityRemoveUtil.entityRemoveFromChunkMap(entity, serverLevel);
                     }
 
                     if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.HIDDEN_ENTITY))
                         TargetManager.addHiddenTarget(entity);
+                }
+            }
+        } else if (level.isClientSide()) {
+            Iterable<Entity> entities = GetAllEntitiesUtil.getClientEntities();
+            for (Entity entity : entities) {
+                if (entity != null && (entity != player)) {
+                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK)) {
+                        EntityRemoveUtil.entityRemoveFromTransientManager(entity, level, true);
+                    }
                 }
             }
         }
@@ -169,7 +178,7 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlo
                             TargetManager.addTpTarget(entity);
                             EntityRemoveUtil.removeEntity(e, serverLevel);
                             EntityRemoveUtil.entityRemoveFromChunkMap(e, serverLevel);
-                            EntityRemoveUtil.entityRemoveFromManager(e, serverLevel);
+                            EntityRemoveUtil.entityRemoveFromPersistentManager(e, serverLevel);
                         }
 
                     }
