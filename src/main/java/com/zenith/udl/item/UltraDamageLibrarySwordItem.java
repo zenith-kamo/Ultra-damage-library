@@ -138,15 +138,15 @@ public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlo
                         TargetManager.addHiddenTarget(entity);
                 }
             }
-        } else if (level.isClientSide()) {
-            Iterable<Entity> entities = GetAllEntitiesUtil.getClientEntities();
-            for (Entity entity : entities) {
-                if (entity != null && (entity != player)) {
-                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK)) {
-                        EntityRemoveUtil.entityRemoveFromTransientManager(entity, level, true);
-                    }
-                }
-            }
+//        } else if (level.isClientSide()) {
+//            Iterable<Entity> entities = GetAllEntitiesUtil.getClientEntities();
+//            for (Entity entity : entities) {
+//                if (entity != null && (entity != player)) {
+//                    if (SwordConfig.isFeatureEnabled(itemStack, ItemSettingModule.NORMAL_ATTACK)) {
+//                        EntityRemoveUtil.entityRemoveFromTransientManager(entity, level, true);
+//                    }
+//                }
+//            }
         }
 
         EntityStorageReplaceUtil.hogehoge(level, itemStack, player);
