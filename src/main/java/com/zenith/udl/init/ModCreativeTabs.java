@@ -24,6 +24,7 @@ public class ModCreativeTabs {
                     // タブに追加するアイテムを設定
                     .displayItems((displayParameters, output) -> {
                         output.accept(ModItems.UDL_SWORD.get());
+                        output.accept(ModItems.ENDOFLIFE.get());
                         if (ModItems.PRO_SWORD != null) {
                             output.accept(ModItems.PRO_SWORD.get());
                         }
