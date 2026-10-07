@@ -1,6 +1,7 @@
 package com.zenith.udl.init;
 
 import com.zenith.udl.Udl;
+import com.zenith.udl.item.EndOfLifeSwordItem;
 import com.zenith.udl.item.debug.Debug2Item;
 import com.zenith.udl.item.debug.Debug3Item;
 import com.zenith.udl.item.debug.DebugItem;
@@ -17,6 +18,8 @@ public class ModItems {
 
     public static final RegistryObject<Item> UDL_SWORD =
             ITEMS.register("ultra_damage_library_sword", UltraDamageLibrarySwordItem::new);
+    public static final RegistryObject<Item> ENDOFLIFE =
+            ITEMS.register("end_of_life", EndOfLifeSwordItem::new);
     public static final RegistryObject<Item> PRO_SWORD = Udl.PRO_BUILD
             ? ITEMS.register("pro_sword", ModItems::createProSword)
             : null;
