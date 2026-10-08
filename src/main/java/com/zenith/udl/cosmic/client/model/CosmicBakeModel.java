@@ -44,6 +44,7 @@ public final class CosmicBakeModel implements BakedModel {
     private static final FaceBakery FACE_BAKERY = new FaceBakery();
     private final List<ResourceLocation> maskSprite;
     private final BakedModel wrapped;
+    private final boolean rainbow;
     private final ItemOverrides overrideList;
     private final ModelState baseState;
     private ModelState parentState;
@@ -51,6 +52,10 @@ public final class CosmicBakeModel implements BakedModel {
     private ClientLevel world;
 
     public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
+        this(wrapped, maskSprite, false);
+    }
+
+    public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite, boolean rainbow) {
         this.overrideList = new ItemOverrides() {
             @Override
             public BakedModel resolve(final @NotNull BakedModel originalModel, final @NotNull ItemStack stack, final ClientLevel world, final LivingEntity entity, final int seed) {
@@ -63,6 +68,7 @@ public final class CosmicBakeModel implements BakedModel {
         this.baseState = TransformUtils.stateFromItemTransforms(wrapped.getTransforms());
         this.parentState = this.baseState;
         this.maskSprite = maskSprite;
+        this.rainbow = rainbow;
     }
 
 //    public void applySwordStateFromStack(ItemStack stack) {
@@ -98,11 +104,17 @@ public final class CosmicBakeModel implements BakedModel {
             yaw = (float) (mc.player.getYRot() * 2.0F * Math.PI / 360.0);
             pitch = -(float) (mc.player.getXRot() * 2.0F * Math.PI / 360.0);
         }
-        AvaritiaShaders.cosmicTime.set((System.currentTimeMillis() - AvaritiaShaders.renderTime) / 2000.0F);
-        AvaritiaShaders.cosmicYaw.set(yaw);
-        AvaritiaShaders.cosmicPitch.set(pitch);
-        AvaritiaShaders.cosmicExternalScale.set(scale);
-        AvaritiaShaders.cosmicOpacity.set(1.0F);
+        var cosmicTime = this.rainbow ? AvaritiaShaders.rainbowCosmicTime : AvaritiaShaders.cosmicTime;
+        var cosmicYaw = this.rainbow ? AvaritiaShaders.rainbowCosmicYaw : AvaritiaShaders.cosmicYaw;
+        var cosmicPitch = this.rainbow ? AvaritiaShaders.rainbowCosmicPitch : AvaritiaShaders.cosmicPitch;
+        var cosmicExternalScale = this.rainbow ? AvaritiaShaders.rainbowCosmicExternalScale : AvaritiaShaders.cosmicExternalScale;
+        var cosmicOpacity = this.rainbow ? AvaritiaShaders.rainbowCosmicOpacity : AvaritiaShaders.cosmicOpacity;
+        var cosmicUVs = this.rainbow ? AvaritiaShaders.rainbowCosmicUVs : AvaritiaShaders.cosmicUVs;
+        cosmicTime.set((System.currentTimeMillis() - AvaritiaShaders.renderTime) / 2000.0F);
+        cosmicYaw.set(yaw);
+        cosmicPitch.set(pitch);
+        cosmicExternalScale.set(scale);
+        cosmicOpacity.set(1.0F);
         for (int i = 0; i < 10; ++i) {
             TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(Udl.rl("misc/cosmic_" + i));
             AvaritiaShaders.COSMIC_UVS[i * 4] = sprite.getU0();
@@ -110,8 +122,9 @@ public final class CosmicBakeModel implements BakedModel {
             AvaritiaShaders.COSMIC_UVS[i * 4 + 2] = sprite.getU1();
             AvaritiaShaders.COSMIC_UVS[i * 4 + 3] = sprite.getV1();
         }
-        AvaritiaShaders.cosmicUVs.set(AvaritiaShaders.COSMIC_UVS);
-        VertexConsumer cons = buffers.getBuffer(AvaritiaShaders.COSMIC_RENDER_TYPE);
+        cosmicUVs.set(AvaritiaShaders.COSMIC_UVS);
+        RenderType cosmicRenderType = this.rainbow ? AvaritiaShaders.RAINBOW_COSMIC_RENDER_TYPE : AvaritiaShaders.COSMIC_RENDER_TYPE;
+        VertexConsumer cons = buffers.getBuffer(cosmicRenderType);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));

@@ -1,6 +1,11 @@
 {
   "parent": "item/generated",
+  "loader": "udl:glow_edge",
   "textures": {
     "layer0": "udl:item/debug"
+  },
+  "glow_edge": {
+    "glowColor": "#55CCFF",
+    "glowWidth": 0.8
   }
 }

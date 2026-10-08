@@ -2,6 +2,7 @@ package com.zenith.udl.mixin.cosmic;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zenith.udl.cosmic.client.model.CosmicBakeModel;
+import com.zenith.udl.cosmic.client.model.GlowEdgeModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
@@ -17,7 +18,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ItemRendererMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void onRenderItem(ItemStack stack, ItemDisplayContext context, boolean leftHand, PoseStack mStack, MultiBufferSource buffers, int packedLight, int packedOverlay, BakedModel modelIn, CallbackInfo ci) {
-        if (modelIn instanceof CosmicBakeModel iItemRenderer) {
+        if (modelIn instanceof GlowEdgeModel glowEdgeModel) {
+            ci.cancel();
+            mStack.pushPose();
+            try {
+                GlowEdgeModel renderer = (GlowEdgeModel) ForgeHooksClient.handleCameraTransforms(mStack, glowEdgeModel, context, leftHand);
+                mStack.translate(-0.5D, -0.5D, -0.5D);
+                renderer.renderItem(stack, mStack, buffers, packedLight, packedOverlay);
+            } finally {
+                mStack.popPose();
+            }
+        } else if (modelIn instanceof CosmicBakeModel iItemRenderer) {
 //            iItemRenderer.applySwordStateFromStack(stack);
             ci.cancel();
             mStack.pushPose();

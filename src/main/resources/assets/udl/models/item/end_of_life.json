@@ -2,5 +2,9 @@
   "parent": "item/generated",
   "textures": {
     "layer0": "udl:item/end_of_life"
+  },
+  "loader": "udl:rainbow_cosmic",
+  "rainbow_cosmic": {
+    "mask": "udl:item/end_of_life_mask"
   }
 }

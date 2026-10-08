@@ -27,21 +27,38 @@ vec3 rgbToVec3(int rgb) {
 }
 
 void main() {
-    // 采样原始纹理
     vec4 texColor = texture(Sampler0, texCoord0);
-
-    // 如果原始像素透明度很低，不显示发光效果
-    if (texColor.a < 0.1) {
-        fragColor = vec4(0.0, 0.0, 0.0, 0.0);
-        return;
+    if (glowWidth <= 0.0) {
+        discard;
     }
 
-    // 使用指定的发光颜色
+    vec2 texel = 1.0 / vec2(textureSize(Sampler0, 0));
+    bool isEdge = false;
+    float edgeAlpha = texColor.a;
+    for (int radius = 1; radius <= 8; radius++) {
+        if (float(radius) > glowWidth) {
+            break;
+        }
+        for (int direction = 0; direction < 8; direction++) {
+            float angle = float(direction) * 0.78539816339;
+            vec2 offset = vec2(cos(angle), sin(angle)) * texel * float(radius);
+            float neighborAlpha = texture(Sampler0, texCoord0 + offset).a;
+            if ((texColor.a >= 0.1 && neighborAlpha < 0.1)
+                    || (texColor.a < 0.1 && neighborAlpha >= 0.1)) {
+                isEdge = true;
+                edgeAlpha = max(texColor.a, neighborAlpha);
+                break;
+            }
+        }
+        if (isEdge) {
+            break;
+        }
+    }
+    if (!isEdge) {
+        discard;
+    }
+
     vec3 glow = rgbToVec3(glowColor);
-
-    // 创建发光效果，使用全亮度颜色
-    fragColor = vec4(glow, texColor.a);
-
-    // 应用雾效
-    fragColor = linear_fog(fragColor * ColorModulator, vertexDistance, FogStart, FogEnd, FogColor);
+    vec4 color = vec4(glow, edgeAlpha * vertexColor.a);
+    fragColor = linear_fog(color * ColorModulator, vertexDistance, FogStart, FogEnd, FogColor);
 }

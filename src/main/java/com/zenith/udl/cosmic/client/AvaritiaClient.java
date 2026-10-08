@@ -1,6 +1,7 @@
 package com.zenith.udl.cosmic.client;
 
 import com.zenith.udl.Udl;
+import com.zenith.udl.cosmic.client.model.GlowEdgeModelLoader;
 import com.zenith.udl.cosmic.client.model.CosmicModelLoader;
 import com.zenith.udl.cosmic.client.shader.AvaritiaShaders;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,5 +20,7 @@ public final class AvaritiaClient {
     @SubscribeEvent
     public static void registerLoaders(ModelEvent.RegisterGeometryLoaders event) {
         event.register("cosmic", CosmicModelLoader.INSTANCE);
+        event.register("rainbow_cosmic", CosmicModelLoader.RAINBOW_INSTANCE);
+        event.register("glow_edge", GlowEdgeModelLoader.INSTANCE);
     }
 }

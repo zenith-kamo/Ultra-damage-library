@@ -45,7 +45,19 @@ public final class AvaritiaShaders {
     public static CCUniform cosmicExternalScale;
     public static CCUniform cosmicOpacity;
     public static CCUniform cosmicUVs;
+    public static CCShaderInstance rainbowCosmicShader;
+    public static CCUniform rainbowCosmicTime;
+    public static CCUniform rainbowCosmicYaw;
+    public static CCUniform rainbowCosmicPitch;
+    public static CCUniform rainbowCosmicExternalScale;
+    public static CCUniform rainbowCosmicOpacity;
+    public static CCUniform rainbowCosmicUVs;
+    public static CCShaderInstance glowEdgeShader;
+    public static CCUniform glowEdgeColor;
+    public static CCUniform glowEdgeWidth;
     public static final RenderType COSMIC_RENDER_TYPE = RenderType.create(Udl.MODID + ":cosmic", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false, RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> cosmicShader)).setDepthTestState(RenderStateShardAccess.EQUAL_DEPTH_TEST).setLightmapState(RenderStateShardAccess.LIGHT_MAP).setTransparencyState(RenderStateShardAccess.TRANSLUCENT_TRANSPARENCY).setTextureState(RenderStateShardAccess.BLOCK_SHEET_MIPPED).createCompositeState(true));
+    public static final RenderType RAINBOW_COSMIC_RENDER_TYPE = RenderType.create(Udl.MODID + ":rainbow_cosmic", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false, RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> rainbowCosmicShader)).setDepthTestState(RenderStateShardAccess.EQUAL_DEPTH_TEST).setLightmapState(RenderStateShardAccess.LIGHT_MAP).setTransparencyState(RenderStateShardAccess.TRANSLUCENT_TRANSPARENCY).setTextureState(RenderStateShardAccess.BLOCK_SHEET_MIPPED).createCompositeState(true));
+    public static final RenderType GLOW_EDGE_RENDER_TYPE = RenderType.create(Udl.MODID + ":glow_edge", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false, RenderType.CompositeState.builder().setShaderState(new RenderStateShard.ShaderStateShard(() -> glowEdgeShader)).setDepthTestState(RenderStateShardAccess.EQUAL_DEPTH_TEST).setLightmapState(RenderStateShardAccess.LIGHT_MAP).setTransparencyState(RenderStateShardAccess.TRANSLUCENT_TRANSPARENCY).setTextureState(RenderStateShardAccess.BLOCK_SHEET_MIPPED).createCompositeState(true));
 
     public static void onRegisterShaders(RegisterShadersEvent event) {
         event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Udl.MODID, "cosmic"), DefaultVertexFormat.BLOCK), e -> {
@@ -58,6 +70,22 @@ public final class AvaritiaShaders {
             cosmicUVs = Objects.requireNonNull(cosmicShader.getUniform("cosmicuvs"));
             cosmicTime.set((float) renderTime + renderFrame);
             cosmicShader.onApply(() -> cosmicTime.set((float) renderTime + renderFrame));
+        });
+        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Udl.MODID, "rainbow_cosmic"), DefaultVertexFormat.BLOCK), e -> {
+            rainbowCosmicShader = (CCShaderInstance) e;
+            rainbowCosmicTime = Objects.requireNonNull(rainbowCosmicShader.getUniform("time"));
+            rainbowCosmicYaw = Objects.requireNonNull(rainbowCosmicShader.getUniform("yaw"));
+            rainbowCosmicPitch = Objects.requireNonNull(rainbowCosmicShader.getUniform("pitch"));
+            rainbowCosmicExternalScale = Objects.requireNonNull(rainbowCosmicShader.getUniform("externalScale"));
+            rainbowCosmicOpacity = Objects.requireNonNull(rainbowCosmicShader.getUniform("opacity"));
+            rainbowCosmicUVs = Objects.requireNonNull(rainbowCosmicShader.getUniform("cosmicuvs"));
+            rainbowCosmicTime.set((float) renderTime + renderFrame);
+            rainbowCosmicShader.onApply(() -> rainbowCosmicTime.set((float) renderTime + renderFrame));
+        });
+        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(Udl.MODID, "glow_edge"), DefaultVertexFormat.BLOCK), e -> {
+            glowEdgeShader = (CCShaderInstance) e;
+            glowEdgeColor = Objects.requireNonNull(glowEdgeShader.getUniform("glowColor"));
+            glowEdgeWidth = Objects.requireNonNull(glowEdgeShader.getUniform("glowWidth"));
         });
     }
 
