@@ -6,5 +6,12 @@
   "loader": "udl:rainbow_cosmic",
   "rainbow_cosmic": {
     "mask": "udl:item/end_of_life_mask"
+  },
+  "glow_edge": {
+    "glowColors": ["#000000", "#FF3333"],
+    "glowAnimation": "cycle",
+    "glowSpeed": 0.5,
+    "glowCycleWidth": 256.0,
+    "glowWidth": 1.0
   }
 }

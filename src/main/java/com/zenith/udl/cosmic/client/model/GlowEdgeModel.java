@@ -44,14 +44,13 @@ public final class GlowEdgeModel implements BakedModel {
     private final ItemOverrides overrideList;
     private BakedModel resolvedModel;
 
-    public GlowEdgeModel(BakedModel wrapped, int[] glowColors, float glowWidth, float glowSpeed,
-                         float glowCycleWidth, int glowAnimation) {
+    public GlowEdgeModel(BakedModel wrapped, GlowEdgeModelLoader.GlowEdgeSettings settings) {
         this.wrapped = wrapped;
-        this.glowColors = glowColors.clone();
-        this.glowWidth = glowWidth;
-        this.glowSpeed = glowSpeed;
-        this.glowCycleWidth = glowCycleWidth;
-        this.glowAnimation = glowAnimation;
+        this.glowColors = settings.colors();
+        this.glowWidth = settings.width();
+        this.glowSpeed = settings.speed();
+        this.glowCycleWidth = settings.cycleWidth();
+        this.glowAnimation = settings.animation();
         this.resolvedModel = wrapped;
         this.overrideList = new ItemOverrides() {
             @Override
@@ -76,10 +75,39 @@ public final class GlowEdgeModel implements BakedModel {
             throw new IllegalStateException("Glow edge rendering requires a buffered item render source.");
         }
 
+        renderGlowEdgeInternal(model, stack, poseStack, bufferSource, packedLight, packedOverlay,
+                this.glowColors, this.glowWidth, this.glowSpeed, this.glowCycleWidth, this.glowAnimation);
+        renderBaseModel(model, stack, poseStack, buffers, packedLight, packedOverlay, minecraft);
+    }
+
+    public static void renderGlowEdge(BakedModel model, ItemStack stack, PoseStack poseStack,
+                                      MultiBufferSource buffers, int packedLight, int packedOverlay,
+                                      GlowEdgeModelLoader.GlowEdgeSettings settings) {
+        renderGlowEdgeInternal(model, stack, poseStack, buffers, packedLight, packedOverlay,
+                settings);
+    }
+
+    private static void renderGlowEdgeInternal(BakedModel model, ItemStack stack, PoseStack poseStack,
+                                               MultiBufferSource buffers, int packedLight, int packedOverlay,
+                                               GlowEdgeModelLoader.GlowEdgeSettings settings) {
+        renderGlowEdgeInternal(model, stack, poseStack, buffers, packedLight, packedOverlay,
+                settings.colors(), settings.width(), settings.speed(), settings.cycleWidth(),
+                settings.animation());
+    }
+
+    private static void renderGlowEdgeInternal(BakedModel model, ItemStack stack, PoseStack poseStack,
+                                               MultiBufferSource buffers, int packedLight, int packedOverlay,
+                                               int[] glowColors, float glowWidth, float glowSpeed,
+                                               float glowCycleWidth, int glowAnimation) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!(buffers instanceof MultiBufferSource.BufferSource bufferSource)) {
+            throw new IllegalStateException("Glow edge rendering requires a buffered item render source.");
+        }
+
         bufferSource.endBatch();
-        setGlowShaderParameters();
+        setGlowShaderParameters(glowColors, glowSpeed, glowCycleWidth, glowAnimation);
         List<BakedModel> renderPasses = model.getRenderPasses(stack, true);
-        float offset = this.glowWidth * GLOW_WIDTH_SCALE;
+        float offset = glowWidth * GLOW_WIDTH_SCALE;
         for (float[] direction : GLOW_DIRECTIONS) {
             poseStack.pushPose();
             try {
@@ -95,7 +123,12 @@ public final class GlowEdgeModel implements BakedModel {
             }
         }
         bufferSource.endBatch(AvaritiaShaders.GLOW_EDGE_RENDER_TYPE);
+    }
 
+    private static void renderBaseModel(BakedModel model, ItemStack stack, PoseStack poseStack,
+                                        MultiBufferSource buffers, int packedLight, int packedOverlay,
+                                        Minecraft minecraft) {
+        List<BakedModel> renderPasses = model.getRenderPasses(stack, true);
         for (BakedModel bakedModel : renderPasses) {
             for (net.minecraft.client.renderer.RenderType renderType : bakedModel.getRenderTypes(stack, true)) {
                 minecraft.getItemRenderer().renderModelLists(bakedModel, stack, packedLight, packedOverlay,
@@ -104,10 +137,11 @@ public final class GlowEdgeModel implements BakedModel {
         }
     }
 
-    private void setGlowShaderParameters() {
-        int firstColor = this.glowColors[0];
-        int secondColor = this.glowColors[Math.min(1, this.glowColors.length - 1)];
-        int thirdColor = this.glowColors[Math.min(2, this.glowColors.length - 1)];
+    private static void setGlowShaderParameters(int[] glowColors, float glowSpeed,
+                                                float glowCycleWidth, int glowAnimation) {
+        int firstColor = glowColors[0];
+        int secondColor = glowColors[Math.min(1, glowColors.length - 1)];
+        int thirdColor = glowColors[Math.min(2, glowColors.length - 1)];
         AvaritiaShaders.glowEdgeColor1.set(
                 ((firstColor >> 16) & 0xFF) / 255.0F,
                 ((firstColor >> 8) & 0xFF) / 255.0F,
@@ -120,12 +154,12 @@ public final class GlowEdgeModel implements BakedModel {
                 ((thirdColor >> 16) & 0xFF) / 255.0F,
                 ((thirdColor >> 8) & 0xFF) / 255.0F,
                 (thirdColor & 0xFF) / 255.0F);
-        AvaritiaShaders.glowEdgeColorCount.set(this.glowColors.length);
+        AvaritiaShaders.glowEdgeColorCount.set(glowColors.length);
         double cycle = (AvaritiaShaders.renderTime + (double) AvaritiaShaders.renderFrame)
-                * this.glowSpeed / 20.0D;
+                * glowSpeed / 20.0D;
         AvaritiaShaders.glowEdgeTime.set((float) (cycle - Math.floor(cycle)));
-        AvaritiaShaders.glowEdgeAnimation.set(this.glowAnimation);
-        AvaritiaShaders.glowEdgeCycleWidth.set(this.glowCycleWidth);
+        AvaritiaShaders.glowEdgeAnimation.set(glowAnimation);
+        AvaritiaShaders.glowEdgeCycleWidth.set(glowCycleWidth);
     }
 
     private static final class GlowEdgePassModel extends BakedModelWrapper<BakedModel> {
@@ -145,15 +179,19 @@ public final class GlowEdgeModel implements BakedModel {
             List<BakedQuad> sourceQuads = this.originalModel.getQuads(state, side, random);
             List<BakedQuad> visibleQuads = new ArrayList<>(sourceQuads.size());
             for (BakedQuad quad : sourceQuads) {
-                Direction normal = quad.getDirection();
-                float dot = this.directionX * normal.getStepX()
-                        + this.directionY * normal.getStepY()
-                        + this.directionZ * normal.getStepZ();
-                if (dot > 0.0F) {
+                if (isVisible(quad)) {
                     visibleQuads.add(quad);
                 }
             }
             return visibleQuads;
+        }
+
+        private boolean isVisible(BakedQuad quad) {
+            Direction normal = quad.getDirection();
+            float dot = this.directionX * normal.getStepX()
+                    + this.directionY * normal.getStepY()
+                    + this.directionZ * normal.getStepZ();
+            return dot > 0.0F;
         }
     }
 

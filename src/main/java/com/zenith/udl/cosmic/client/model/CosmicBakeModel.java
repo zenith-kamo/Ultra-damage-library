@@ -45,6 +45,7 @@ public final class CosmicBakeModel implements BakedModel {
     private final List<ResourceLocation> maskSprite;
     private final BakedModel wrapped;
     private final boolean rainbow;
+    private final GlowEdgeModelLoader.GlowEdgeSettings glowEdgeSettings;
     private final ItemOverrides overrideList;
     private final ModelState baseState;
     private ModelState parentState;
@@ -52,10 +53,15 @@ public final class CosmicBakeModel implements BakedModel {
     private ClientLevel world;
 
     public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite) {
-        this(wrapped, maskSprite, false);
+        this(wrapped, maskSprite, false, null);
     }
 
     public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite, boolean rainbow) {
+        this(wrapped, maskSprite, rainbow, null);
+    }
+
+    public CosmicBakeModel(final BakedModel wrapped, final List<ResourceLocation> maskSprite, boolean rainbow,
+                           GlowEdgeModelLoader.GlowEdgeSettings glowEdgeSettings) {
         this.overrideList = new ItemOverrides() {
             @Override
             public BakedModel resolve(final @NotNull BakedModel originalModel, final @NotNull ItemStack stack, final ClientLevel world, final LivingEntity entity, final int seed) {
@@ -69,6 +75,7 @@ public final class CosmicBakeModel implements BakedModel {
         this.parentState = this.baseState;
         this.maskSprite = maskSprite;
         this.rainbow = rainbow;
+        this.glowEdgeSettings = glowEdgeSettings;
     }
 
 //    public void applySwordStateFromStack(ItemStack stack) {
@@ -85,6 +92,10 @@ public final class CosmicBakeModel implements BakedModel {
         BakedModel model = this.wrapped.getOverrides().resolve(this.wrapped, stack, this.world, this.entity, 0);
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         assert model != null;
+        if (this.glowEdgeSettings != null) {
+            GlowEdgeModel.renderGlowEdge(model, stack, pStack, buffers, packedLight, packedOverlay,
+                    this.glowEdgeSettings);
+        }
         for (BakedModel bakedModel : model.getRenderPasses(stack, true)) {
             for (RenderType rendertype : bakedModel.getRenderTypes(stack, true)) {
                 itemRenderer.renderModelLists(bakedModel, stack, packedLight, packedOverlay, pStack, buffers.getBuffer(rendertype));
@@ -124,7 +135,6 @@ public final class CosmicBakeModel implements BakedModel {
         }
         cosmicUVs.set(AvaritiaShaders.COSMIC_UVS);
         RenderType cosmicRenderType = this.rainbow ? AvaritiaShaders.RAINBOW_COSMIC_RENDER_TYPE : AvaritiaShaders.COSMIC_RENDER_TYPE;
-        VertexConsumer cons = buffers.getBuffer(cosmicRenderType);
         List<TextureAtlasSprite> atlasSprite = new ArrayList<>();
         for (ResourceLocation res : maskSprite) {
             atlasSprite.add(Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(res));
@@ -139,6 +149,7 @@ public final class CosmicBakeModel implements BakedModel {
             }
         }
 
+        VertexConsumer cons = buffers.getBuffer(cosmicRenderType);
         mc.getItemRenderer().renderQuadList(pStack, cons, quads, stack, packedLight, packedOverlay);
     }
 

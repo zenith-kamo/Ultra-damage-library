@@ -44,11 +44,15 @@ public final class CosmicModelLoader implements IGeometryLoader<CosmicModelLoade
             } else {
                 maskTexture.add(GsonHelper.getAsString(cosmicObj, "mask"));
             }
+            GlowEdgeModelLoader.GlowEdgeSettings glowEdgeSettings = modelContents.has("glow_edge")
+                    ? GlowEdgeModelLoader.readSettings(GsonHelper.getAsJsonObject(modelContents, "glow_edge"))
+                    : null;
             JsonObject clean = modelContents.deepCopy();
             clean.remove(geometryKey);
+            clean.remove("glow_edge");
             clean.remove("loader");
             BlockModel baseModel = deserializationContext.deserialize(clean, BlockModel.class);
-            return new CosmicGeometry(baseModel, maskTexture, this.rainbow);
+            return new CosmicGeometry(baseModel, maskTexture, this.rainbow, glowEdgeSettings);
         }
     }
 
@@ -56,11 +60,14 @@ public final class CosmicModelLoader implements IGeometryLoader<CosmicModelLoade
         private final BlockModel baseModel;
         private final List<String> maskTextures;
         private final boolean rainbow;
+        private final GlowEdgeModelLoader.GlowEdgeSettings glowEdgeSettings;
 
-        public CosmicGeometry(final BlockModel baseModel, final List<String> maskTextures, boolean rainbow) {
+        public CosmicGeometry(final BlockModel baseModel, final List<String> maskTextures, boolean rainbow,
+                              GlowEdgeModelLoader.GlowEdgeSettings glowEdgeSettings) {
             this.baseModel = baseModel;
             this.maskTextures = maskTextures;
             this.rainbow = rainbow;
+            this.glowEdgeSettings = glowEdgeSettings;
         }
 
         @Override
@@ -68,7 +75,7 @@ public final class CosmicModelLoader implements IGeometryLoader<CosmicModelLoade
             BakedModel baseBakedModel = this.baseModel.bake(baker, this.baseModel, spriteGetter, modelState, modelLocation, true);
             List<ResourceLocation> textures = new ArrayList<>();
             this.maskTextures.forEach(mask -> textures.add(new ResourceLocation(mask)));
-            return new CosmicBakeModel(baseBakedModel, textures, this.rainbow);
+            return new CosmicBakeModel(baseBakedModel, textures, this.rainbow, this.glowEdgeSettings);
         }
 
         @Override

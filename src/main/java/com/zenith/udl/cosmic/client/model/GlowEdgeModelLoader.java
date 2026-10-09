@@ -41,6 +41,16 @@ public final class GlowEdgeModelLoader implements IGeometryLoader<GlowEdgeModelL
             throw new JsonParseException("Missing 'glow_edge' object.");
         }
 
+        GlowEdgeSettings settings = readSettings(glowEdgeObject);
+
+        JsonObject clean = modelContents.deepCopy();
+        clean.remove("glow_edge");
+        clean.remove("loader");
+        BlockModel baseModel = deserializationContext.deserialize(clean, BlockModel.class);
+        return new GlowEdgeGeometry(baseModel, settings);
+    }
+
+    public static GlowEdgeSettings readSettings(JsonObject glowEdgeObject) throws JsonParseException {
         int color = readColor(glowEdgeObject);
         int[] colors = readColors(glowEdgeObject, color);
         float width = GsonHelper.getAsFloat(glowEdgeObject, "glowWidth", DEFAULT_GLOW_WIDTH);
@@ -57,12 +67,43 @@ public final class GlowEdgeModelLoader implements IGeometryLoader<GlowEdgeModelL
                     + MAX_GLOW_CYCLE_WIDTH + ".");
         }
         int animation = readAnimation(glowEdgeObject);
+        return new GlowEdgeSettings(colors, width, speed, cycleWidth, animation);
+    }
 
-        JsonObject clean = modelContents.deepCopy();
-        clean.remove("glow_edge");
-        clean.remove("loader");
-        BlockModel baseModel = deserializationContext.deserialize(clean, BlockModel.class);
-        return new GlowEdgeGeometry(baseModel, colors, width, speed, cycleWidth, animation);
+    public static final class GlowEdgeSettings {
+        private final int[] colors;
+        private final float width;
+        private final float speed;
+        private final float cycleWidth;
+        private final int animation;
+
+        private GlowEdgeSettings(int[] colors, float width, float speed, float cycleWidth, int animation) {
+            this.colors = colors.clone();
+            this.width = width;
+            this.speed = speed;
+            this.cycleWidth = cycleWidth;
+            this.animation = animation;
+        }
+
+        int[] colors() {
+            return this.colors.clone();
+        }
+
+        float width() {
+            return this.width;
+        }
+
+        float speed() {
+            return this.speed;
+        }
+
+        float cycleWidth() {
+            return this.cycleWidth;
+        }
+
+        int animation() {
+            return this.animation;
+        }
     }
 
     private static int[] readColors(JsonObject glowEdgeObject, int fallbackColor) {
@@ -123,20 +164,11 @@ public final class GlowEdgeModelLoader implements IGeometryLoader<GlowEdgeModelL
 
     public static class GlowEdgeGeometry implements IUnbakedGeometry<GlowEdgeGeometry> {
         private final BlockModel baseModel;
-        private final int[] colors;
-        private final float width;
-        private final float speed;
-        private final float cycleWidth;
-        private final int animation;
+        private final GlowEdgeSettings settings;
 
-        private GlowEdgeGeometry(BlockModel baseModel, int[] colors, float width, float speed,
-                                 float cycleWidth, int animation) {
+        private GlowEdgeGeometry(BlockModel baseModel, GlowEdgeSettings settings) {
             this.baseModel = baseModel;
-            this.colors = colors;
-            this.width = width;
-            this.speed = speed;
-            this.cycleWidth = cycleWidth;
-            this.animation = animation;
+            this.settings = settings;
         }
 
         @Override
@@ -144,8 +176,7 @@ public final class GlowEdgeModelLoader implements IGeometryLoader<GlowEdgeModelL
                                Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState,
                                ItemOverrides overrides, ResourceLocation modelLocation) {
             BakedModel baseBakedModel = this.baseModel.bake(baker, this.baseModel, spriteGetter, modelState, modelLocation, true);
-            return new GlowEdgeModel(baseBakedModel, this.colors, this.width, this.speed,
-                    this.cycleWidth, this.animation);
+            return new GlowEdgeModel(baseBakedModel, this.settings);
         }
 
         @Override
