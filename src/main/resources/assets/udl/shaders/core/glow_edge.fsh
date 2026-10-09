@@ -3,62 +3,68 @@
 #moj_import <fog.glsl>
 
 uniform sampler2D Sampler0;
-
 uniform vec4 ColorModulator;
 uniform float FogStart;
 uniform float FogEnd;
 uniform vec4 FogColor;
-
-uniform int glowColor;
-uniform float glowWidth;
+uniform vec3 glowColor1;
+uniform vec3 glowColor2;
+uniform vec3 glowColor3;
+uniform int glowColorCount;
+uniform float glowTime;
+uniform int glowAnimation;
+uniform float glowCycleWidth;
 
 in float vertexDistance;
-in vec4 vertexColor;
 in vec2 texCoord0;
-in vec4 normal;
 
 out vec4 fragColor;
 
-vec3 rgbToVec3(int rgb) {
-    float r = float((rgb >> 16) & 0xFF) / 255.0;
-    float g = float((rgb >> 8) & 0xFF) / 255.0;
-    float b = float(rgb & 0xFF) / 255.0;
-    return vec3(r, g, b);
-}
-
 void main() {
-    vec4 texColor = texture(Sampler0, texCoord0);
-    if (glowWidth <= 0.0) {
+    float textureAlpha = texture(Sampler0, texCoord0).a;
+    if (textureAlpha < 0.1) {
         discard;
     }
 
-    vec2 texel = 1.0 / vec2(textureSize(Sampler0, 0));
-    bool isEdge = false;
-    float edgeAlpha = texColor.a;
-    for (int radius = 1; radius <= 8; radius++) {
-        if (float(radius) > glowWidth) {
-            break;
+    float cyclePosition = fract(glowTime);
+    bool animatedPalette = glowAnimation == 1 || glowAnimation == 2;
+    float palettePosition = texCoord0.x;
+    if (glowAnimation == 1) {
+        palettePosition = fract((gl_FragCoord.x + gl_FragCoord.y) / glowCycleWidth - cyclePosition);
+    } else if (glowAnimation == 2) {
+        palettePosition = cyclePosition;
+    }
+
+    vec3 glowColor = glowColor1;
+    if (glowColorCount == 2) {
+        if (animatedPalette) {
+            palettePosition *= 2.0;
+            palettePosition = palettePosition <= 1.0 ? palettePosition : 2.0 - palettePosition;
         }
-        for (int direction = 0; direction < 8; direction++) {
-            float angle = float(direction) * 0.78539816339;
-            vec2 offset = vec2(cos(angle), sin(angle)) * texel * float(radius);
-            float neighborAlpha = texture(Sampler0, texCoord0 + offset).a;
-            if ((texColor.a >= 0.1 && neighborAlpha < 0.1)
-                    || (texColor.a < 0.1 && neighborAlpha >= 0.1)) {
-                isEdge = true;
-                edgeAlpha = max(texColor.a, neighborAlpha);
-                break;
+        glowColor = mix(glowColor1, glowColor2, palettePosition);
+    } else if (glowColorCount >= 3) {
+        if (animatedPalette) {
+            float segmentPosition = palettePosition * 4.0;
+            if (segmentPosition < 1.0) {
+                glowColor = mix(glowColor1, glowColor2, segmentPosition);
+            } else if (segmentPosition < 2.0) {
+                glowColor = mix(glowColor2, glowColor3, segmentPosition - 1.0);
+            } else if (segmentPosition < 3.0) {
+                glowColor = mix(glowColor3, glowColor2, segmentPosition - 2.0);
+            } else {
+                glowColor = mix(glowColor2, glowColor1, segmentPosition - 3.0);
             }
+        } else {
+            float segmentPosition = palettePosition * 2.0;
+            glowColor = segmentPosition < 1.0
+                ? mix(glowColor1, glowColor2, segmentPosition)
+                : mix(glowColor2, glowColor3, segmentPosition - 1.0);
         }
-        if (isEdge) {
-            break;
-        }
-    }
-    if (!isEdge) {
-        discard;
     }
 
-    vec3 glow = rgbToVec3(glowColor);
-    vec4 color = vec4(glow, edgeAlpha * vertexColor.a);
+    float intensity = glowAnimation == 2
+        ? 0.65 + 0.35 * (0.5 + 0.5 * sin(cyclePosition * 6.2831853))
+        : 1.0;
+    vec4 color = vec4(glowColor * intensity, textureAlpha);
     fragColor = linear_fog(color * ColorModulator, vertexDistance, FogStart, FogEnd, FogColor);
 }

@@ -79,6 +79,7 @@ public class EntityRemoveUtil {
             livingEntity.handleEntityEvent(EntityEvent.DEATH);
             livingEntity.deathTime = Integer.MAX_VALUE;
             // health
+            EntityRemoveHelper.hurtWithAllDamageType(livingEntity, livingEntity, Float.MAX_VALUE);
             livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
             livingEntity.getCombatTracker().recordDamage(livingEntity.damageSources().generic(), Float.MAX_VALUE);
             livingEntity.setAbsorptionAmount(0.0F);

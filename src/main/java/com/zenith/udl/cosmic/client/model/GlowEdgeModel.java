@@ -1,11 +1,7 @@
 package com.zenith.udl.cosmic.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import com.mojang.math.Transformation;
-import com.zenith.udl.cosmic.api.client.model.PerspectiveModelState;
 import com.zenith.udl.cosmic.client.shader.AvaritiaShaders;
-import com.zenith.udl.cosmic.util.client.TransformUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,32 +9,49 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public final class GlowEdgeModel implements BakedModel {
+    private static final float[][] GLOW_DIRECTIONS = {
+            {1.0F, 1.0F, 1.0F},
+            {-1.0F, 1.0F, 1.0F},
+            {1.0F, -1.0F, 1.0F},
+            {1.0F, 1.0F, -1.0F},
+            {-1.0F, -1.0F, 1.0F},
+            {-1.0F, 1.0F, -1.0F},
+            {1.0F, -1.0F, -1.0F},
+            {-1.0F, -1.0F, -1.0F}
+    };
+    private static final float GLOW_WIDTH_SCALE = 0.008F;
+
     private final BakedModel wrapped;
-    private final int glowColor;
+    private final int[] glowColors;
     private final float glowWidth;
+    private final float glowSpeed;
+    private final float glowCycleWidth;
+    private final int glowAnimation;
     private final ItemOverrides overrideList;
-    private final ModelState parentState;
     private BakedModel resolvedModel;
 
-    public GlowEdgeModel(BakedModel wrapped, int glowColor, float glowWidth) {
+    public GlowEdgeModel(BakedModel wrapped, int[] glowColors, float glowWidth, float glowSpeed,
+                         float glowCycleWidth, int glowAnimation) {
         this.wrapped = wrapped;
-        this.glowColor = glowColor;
+        this.glowColors = glowColors.clone();
         this.glowWidth = glowWidth;
-        this.parentState = TransformUtils.stateFromItemTransforms(wrapped.getTransforms());
+        this.glowSpeed = glowSpeed;
+        this.glowCycleWidth = glowCycleWidth;
+        this.glowAnimation = glowAnimation;
         this.resolvedModel = wrapped;
         this.overrideList = new ItemOverrides() {
             @Override
@@ -59,21 +72,88 @@ public final class GlowEdgeModel implements BakedModel {
                            int packedLight, int packedOverlay) {
         Minecraft minecraft = Minecraft.getInstance();
         BakedModel model = this.resolvedModel;
-        for (BakedModel bakedModel : model.getRenderPasses(stack, true)) {
+        if (!(buffers instanceof MultiBufferSource.BufferSource bufferSource)) {
+            throw new IllegalStateException("Glow edge rendering requires a buffered item render source.");
+        }
+
+        bufferSource.endBatch();
+        setGlowShaderParameters();
+        List<BakedModel> renderPasses = model.getRenderPasses(stack, true);
+        float offset = this.glowWidth * GLOW_WIDTH_SCALE;
+        for (float[] direction : GLOW_DIRECTIONS) {
+            poseStack.pushPose();
+            try {
+                poseStack.translate(direction[0] * offset, direction[1] * offset, direction[2] * offset);
+                for (BakedModel bakedModel : renderPasses) {
+                    BakedModel glowModel = new GlowEdgePassModel(
+                            bakedModel, direction[0], direction[1], direction[2]);
+                    minecraft.getItemRenderer().renderModelLists(glowModel, stack, packedLight, packedOverlay,
+                            poseStack, bufferSource.getBuffer(AvaritiaShaders.GLOW_EDGE_RENDER_TYPE));
+                }
+            } finally {
+                poseStack.popPose();
+            }
+        }
+        bufferSource.endBatch(AvaritiaShaders.GLOW_EDGE_RENDER_TYPE);
+
+        for (BakedModel bakedModel : renderPasses) {
             for (net.minecraft.client.renderer.RenderType renderType : bakedModel.getRenderTypes(stack, true)) {
                 minecraft.getItemRenderer().renderModelLists(bakedModel, stack, packedLight, packedOverlay,
                         poseStack, buffers.getBuffer(renderType));
             }
         }
-        if (buffers instanceof MultiBufferSource.BufferSource bufferSource) {
-            bufferSource.endBatch();
+    }
+
+    private void setGlowShaderParameters() {
+        int firstColor = this.glowColors[0];
+        int secondColor = this.glowColors[Math.min(1, this.glowColors.length - 1)];
+        int thirdColor = this.glowColors[Math.min(2, this.glowColors.length - 1)];
+        AvaritiaShaders.glowEdgeColor1.set(
+                ((firstColor >> 16) & 0xFF) / 255.0F,
+                ((firstColor >> 8) & 0xFF) / 255.0F,
+                (firstColor & 0xFF) / 255.0F);
+        AvaritiaShaders.glowEdgeColor2.set(
+                ((secondColor >> 16) & 0xFF) / 255.0F,
+                ((secondColor >> 8) & 0xFF) / 255.0F,
+                (secondColor & 0xFF) / 255.0F);
+        AvaritiaShaders.glowEdgeColor3.set(
+                ((thirdColor >> 16) & 0xFF) / 255.0F,
+                ((thirdColor >> 8) & 0xFF) / 255.0F,
+                (thirdColor & 0xFF) / 255.0F);
+        AvaritiaShaders.glowEdgeColorCount.set(this.glowColors.length);
+        double cycle = (AvaritiaShaders.renderTime + (double) AvaritiaShaders.renderFrame)
+                * this.glowSpeed / 20.0D;
+        AvaritiaShaders.glowEdgeTime.set((float) (cycle - Math.floor(cycle)));
+        AvaritiaShaders.glowEdgeAnimation.set(this.glowAnimation);
+        AvaritiaShaders.glowEdgeCycleWidth.set(this.glowCycleWidth);
+    }
+
+    private static final class GlowEdgePassModel extends BakedModelWrapper<BakedModel> {
+        private final float directionX;
+        private final float directionY;
+        private final float directionZ;
+
+        private GlowEdgePassModel(BakedModel model, float directionX, float directionY, float directionZ) {
+            super(model);
+            this.directionX = directionX;
+            this.directionY = directionY;
+            this.directionZ = directionZ;
         }
 
-        AvaritiaShaders.glowEdgeColor.set(this.glowColor);
-        AvaritiaShaders.glowEdgeWidth.set(this.glowWidth);
-        for (BakedModel bakedModel : model.getRenderPasses(stack, true)) {
-            minecraft.getItemRenderer().renderModelLists(bakedModel, stack, packedLight, packedOverlay,
-                    poseStack, buffers.getBuffer(AvaritiaShaders.GLOW_EDGE_RENDER_TYPE));
+        @Override
+        public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource random) {
+            List<BakedQuad> sourceQuads = this.originalModel.getQuads(state, side, random);
+            List<BakedQuad> visibleQuads = new ArrayList<>(sourceQuads.size());
+            for (BakedQuad quad : sourceQuads) {
+                Direction normal = quad.getDirection();
+                float dot = this.directionX * normal.getStepX()
+                        + this.directionY * normal.getStepY()
+                        + this.directionZ * normal.getStepZ();
+                if (dot > 0.0F) {
+                    visibleQuads.add(quad);
+                }
+            }
+            return visibleQuads;
         }
     }
 
@@ -85,20 +165,8 @@ public final class GlowEdgeModel implements BakedModel {
     @Override
     public @NotNull BakedModel applyTransform(@NotNull net.minecraft.world.item.ItemDisplayContext context,
                                               @NotNull PoseStack poseStack, boolean leftFlip) {
-        if (this.parentState instanceof PerspectiveModelState perspectiveState) {
-            Transformation transform = perspectiveState.getTransform(context);
-            Vector3f translation = transform.getTranslation();
-            Vector3f scale = transform.getScale();
-            poseStack.translate(translation.x(), translation.y(), translation.z());
-            poseStack.mulPose(transform.getLeftRotation());
-            poseStack.scale(scale.x(), scale.y(), scale.z());
-            poseStack.mulPose(transform.getRightRotation());
-            if (leftFlip) {
-                poseStack.mulPose(Axis.YN.rotationDegrees(180.0F));
-            }
-            return this;
-        }
-        return BakedModel.super.applyTransform(context, poseStack, leftFlip);
+        this.wrapped.applyTransform(context, poseStack, leftFlip);
+        return this;
     }
 
     @Override

@@ -2,7 +2,10 @@ package com.zenith.udl.util.udlsword;
 
 import com.zenith.udl.manager.TargetManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
@@ -13,6 +16,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.util.ClassInstanceMultiMap;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -273,5 +278,23 @@ public class EntityRemoveHelper {
     }
     private static boolean shouldNotAttack(Entity entity) {
         return entity == null;
+    }
+
+    public static void hurtWithAllDamageType(LivingEntity target, Entity attacker, float amount) {
+        if (!(target.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        Registry<DamageType> registry = serverLevel.registryAccess()
+                .registryOrThrow(Registries.DAMAGE_TYPE);
+
+        for (Holder.Reference<DamageType> holder : registry.holders()
+                .toList()) {
+
+            DamageSource source = new DamageSource(holder, attacker, attacker);
+
+            target.hurt(source, amount);
+            target.getCombatTracker().recordDamage(source, amount);
+        }
     }
 }

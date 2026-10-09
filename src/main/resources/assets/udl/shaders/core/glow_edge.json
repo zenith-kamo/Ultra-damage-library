@@ -14,8 +14,7 @@
     "Normal"
   ],
   "samplers": [
-    { "name": "Sampler0" },
-    { "name": "Sampler2" }
+    { "name": "Sampler0" }
   ],
   "uniforms": [
     { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
@@ -25,7 +24,12 @@
     { "name": "FogEnd", "type": "float", "count": 1, "values": [ 1.0 ] },
     { "name": "FogColor", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
     { "name": "FogShape", "type": "int", "count": 1, "values": [ 0 ] },
-    { "name": "glowColor", "type": "int", "count": 1, "values": [ 16777215 ] },
-    { "name": "glowWidth", "type": "float", "count": 1, "values": [ 1.0 ] }
+    { "name": "glowColor1", "type": "float", "count": 3, "values": [ 1.0, 1.0, 1.0 ] },
+    { "name": "glowColor2", "type": "float", "count": 3, "values": [ 1.0, 1.0, 1.0 ] },
+    { "name": "glowColor3", "type": "float", "count": 3, "values": [ 1.0, 1.0, 1.0 ] },
+    { "name": "glowColorCount", "type": "int", "count": 1, "values": [ 1 ] },
+    { "name": "glowTime", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "glowAnimation", "type": "int", "count": 1, "values": [ 0 ] },
+    { "name": "glowCycleWidth", "type": "float", "count": 1, "values": [ 125.0 ] }
   ]
 }

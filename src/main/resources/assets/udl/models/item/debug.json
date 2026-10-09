@@ -5,7 +5,10 @@
     "layer0": "udl:item/debug"
   },
   "glow_edge": {
-    "glowColor": "#55CCFF",
-    "glowWidth": 0.8
+    "glowColors": ["#000000", "#ffffff"],
+    "glowAnimation": "cycle",
+    "glowSpeed": 1.0,
+    "glowWidth": 0.5,
+    "glowCycleWidth": 125.0
   }
 }
