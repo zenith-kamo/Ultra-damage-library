@@ -10,6 +10,7 @@ import com.zenith.udl.manager.EntityBanManager;
 import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.util.ColorUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
+import com.zenith.udl.util.udlsword.EntityRemoveHelper;
 import com.zenith.udl.util.udlsword.EntityRemoveUtil;
 import com.zenith.udl.util.udlsword.EntityResetUtil;
 import com.zenith.udl.util.udlsword.HealthRewriter;
@@ -100,67 +101,74 @@ public class EndOfLifeSwordItem extends UdlSwordItem implements IUDLGlowTooltip 
             if (!level.isClientSide) {
                 mode++;
 
-                if (mode > 7) {
+                if (mode > 8) {
                     mode = 1;
                 }
 
                 String modeName = switch (mode) {
-                    case 1 -> "sethealth";
-                    case 2 -> "entityData";
-                    case 3 -> "allEntityData";
-                    case 4 -> "NBT";
-                    case 5 -> "mixin";
-                    case 6 -> "Field(doesn't work?";
-                    case 7 -> "All";
+                    case 1 -> "hurt";
+                    case 2 -> "sethealth";
+                    case 3 -> "entityData";
+                    case 4 -> "allEntityData";
+                    case 5 -> "NBT";
+                    case 6 -> "mixin";
+                    case 7 -> "Field(doesn't work?";
+                    case 8 -> "All";
                     default -> "Unknown";
                 };
 
                 player.displayClientMessage(ColorUtil.makeRainbow("Mode: " + mode + " (" + modeName + ")"), true);
             }
 
-           return InteractionResultHolder.consume(itemStack);
+            return InteractionResultHolder.consume(itemStack);
         } else if (level instanceof ServerLevel serverLevel) {
             String modeName = switch (mode) {
-                case 1 -> "sethealth";
-                case 2 -> "entityData";
-                case 3 -> "allEntityData";
-                case 4 -> "NBT";
-                case 5 -> "mixin";
-                case 6 -> "Field(doesn't work?)";
-                case 7 -> "All";
+                case 1 -> "hurt";
+                case 2 -> "sethealth";
+                case 3 -> "entityData";
+                case 4 -> "allEntityData";
+                case 5 -> "NBT";
+                case 6 -> "mixin";
+                case 7 -> "Field(doesn't work?";
+                case 8 -> "All";
                 default -> "Unknown";
             };
+
             Iterable<Entity> entities = GetAllEntitiesUtil.getServerEntities(serverLevel);
             int count = 0;
             for (Entity entity : entities) {
-                if (entity != null && !(entity instanceof Player)) {
+                if (entity instanceof LivingEntity livingEntity && !(entity instanceof Player)) {
                     count++;
                     switch (mode) {
                         case 1 -> {
-                            HealthRewriter.entityHealthRewrite(entity, 1);
+                            EntityRemoveHelper.hurtWithAllDamageType(livingEntity, player, Float.MAX_VALUE);
                         }
                         case 2 -> {
-                            HealthRewriter.entityHealthRewrite(entity, 2);
+                            HealthRewriter.entityHealthRewrite(livingEntity, 1);
                         }
                         case 3 -> {
-                            HealthRewriter.entityHealthRewrite(entity, 3);
+                            HealthRewriter.entityHealthRewrite(livingEntity, 2);
                         }
                         case 4 -> {
-                            HealthRewriter.entityHealthRewriteFromNBT(entity);
+                            HealthRewriter.entityHealthRewrite(livingEntity, 3);
                         }
                         case 5 -> {
-                            HealthRewriter.entityHealthRewrite(entity, 4);
+                            HealthRewriter.entityHealthRewriteFromNBT(livingEntity);
                         }
                         case 6 -> {
-                            HealthRewriter.entityHealthRewriteFromField(entity);
+                            HealthRewriter.entityHealthRewrite(livingEntity, 4);
                         }
                         case 7 -> {
-                            HealthRewriter.entityHealthRewrite(entity, 1);
-                            HealthRewriter.entityHealthRewrite(entity, 2);
-                            HealthRewriter.entityHealthRewrite(entity, 3);
-                            HealthRewriter.entityHealthRewriteFromNBT(entity);
-                            HealthRewriter.entityHealthRewrite(entity, 4);
-                            HealthRewriter.entityHealthRewriteFromField(entity);
+                            HealthRewriter.entityHealthRewriteFromField(livingEntity);
+                        }
+                        case 8 -> {
+                            EntityRemoveHelper.hurtWithAllDamageType(livingEntity, player, Float.MAX_VALUE);
+                            HealthRewriter.entityHealthRewrite(livingEntity, 1);
+                            HealthRewriter.entityHealthRewrite(livingEntity, 2);
+                            HealthRewriter.entityHealthRewrite(livingEntity, 3);
+                            HealthRewriter.entityHealthRewriteFromNBT(livingEntity);
+                            HealthRewriter.entityHealthRewrite(livingEntity, 4);
+                            HealthRewriter.entityHealthRewriteFromField(livingEntity);
                         }
                     }
                 }
@@ -174,45 +182,53 @@ public class EndOfLifeSwordItem extends UdlSwordItem implements IUDLGlowTooltip 
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (!entity.level().isClientSide && entity.level() instanceof ServerLevel serverLevel) {
             String modeName = switch (mode) {
-                case 1 -> "sethealth";
-                case 2 -> "entityData";
-                case 3 -> "allEntityData";
-                case 4 -> "NBT";
-                case 5 -> "mixin";
-                case 6 -> "Field(doesn't work?";
-                case 7 -> "All";
+                case 1 -> "hurt";
+                case 2 -> "sethealth";
+                case 3 -> "entityData";
+                case 4 -> "allEntityData";
+                case 5 -> "NBT";
+                case 6 -> "mixin";
+                case 7 -> "Field(doesn't work?";
+                case 8 -> "All";
                 default -> "Unknown";
             };
-            switch (mode) {
-                case 1 -> {
-                    HealthRewriter.entityHealthRewrite(entity, 1);
-                }
-                case 2 -> {
-                    HealthRewriter.entityHealthRewrite(entity, 2);
-                }
-                case 3 -> {
-                    HealthRewriter.entityHealthRewrite(entity, 3);
-                }
-                case 4 -> {
-                    HealthRewriter.entityHealthRewriteFromNBT(entity);
-                }
-                case 5 -> {
-                    HealthRewriter.entityHealthRewrite(entity, 4);
-                }
-                case 6 -> {
-                    HealthRewriter.entityHealthRewriteFromField(entity);
-                }
-                case 7 -> {
-                    HealthRewriter.entityHealthRewrite(entity, 1);
-                    HealthRewriter.entityHealthRewrite(entity, 2);
-                    HealthRewriter.entityHealthRewrite(entity, 3);
-                    HealthRewriter.entityHealthRewriteFromNBT(entity);
-                    HealthRewriter.entityHealthRewrite(entity, 4);
-                    HealthRewriter.entityHealthRewriteFromField(entity);
+            if (entity instanceof LivingEntity livingEntity && !(entity instanceof Player)) {
+                switch (mode) {
+                    case 1 -> {
+                        EntityRemoveHelper.hurtWithAllDamageType(livingEntity, player, Float.MAX_VALUE);
+                    }
+                    case 2 -> {
+                        HealthRewriter.entityHealthRewrite(livingEntity, 1);
+                    }
+                    case 3 -> {
+                        HealthRewriter.entityHealthRewrite(livingEntity, 2);
+                    }
+                    case 4 -> {
+                        HealthRewriter.entityHealthRewrite(livingEntity, 3);
+                    }
+                    case 5 -> {
+                        HealthRewriter.entityHealthRewriteFromNBT(livingEntity);
+                    }
+                    case 6 -> {
+                        HealthRewriter.entityHealthRewrite(livingEntity, 4);
+                    }
+                    case 7 -> {
+                        HealthRewriter.entityHealthRewriteFromField(livingEntity);
+                    }
+                    case 8 -> {
+                        EntityRemoveHelper.hurtWithAllDamageType(livingEntity, player, Float.MAX_VALUE);
+                        HealthRewriter.entityHealthRewrite(livingEntity, 1);
+                        HealthRewriter.entityHealthRewrite(livingEntity, 2);
+                        HealthRewriter.entityHealthRewrite(livingEntity, 3);
+                        HealthRewriter.entityHealthRewriteFromNBT(livingEntity);
+                        HealthRewriter.entityHealthRewrite(livingEntity, 4);
+                        HealthRewriter.entityHealthRewriteFromField(livingEntity);
+                    }
                 }
             }
-            player.displayClientMessage(ColorUtil.makeRainbow("Killed " + entity.getDisplayName().getString() + " | Mode: " + mode + " (" + modeName + ")"), true);
         }
+        player.displayClientMessage(ColorUtil.makeRainbow("Killed " + entity.getDisplayName().getString() + " | Mode: " + mode), true);
+
         return true;
     }
 

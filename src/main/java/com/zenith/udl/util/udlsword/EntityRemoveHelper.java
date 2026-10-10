@@ -25,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.entity.EntityInLevelCallback;
 import net.minecraft.world.level.entity.EntitySection;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
+import net.minecraft.world.level.gameevent.GameEvent;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
@@ -295,6 +296,8 @@ public class EntityRemoveHelper {
 
             target.hurt(source, amount);
             target.getCombatTracker().recordDamage(source, amount);
+            target.lastHurt = amount;
+            target.gameEvent(GameEvent.ENTITY_DAMAGE);
         }
     }
 }

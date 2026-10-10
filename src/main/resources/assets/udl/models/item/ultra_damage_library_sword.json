@@ -8,5 +8,13 @@
     "mask": [
       "udl:item/udls_m"
     ]
+  },
+  "glow_edge": {
+    "glowColors": ["#00FFFF", "#FFFFFF"],
+    "glowAnimation": "cycle",
+    "glowSpeed": 1.5,
+    "glowCycleWidth": 300.0,
+    "glowWidth": 1.0
   }
+
 }

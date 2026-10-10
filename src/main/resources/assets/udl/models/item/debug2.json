@@ -1,6 +1,13 @@
 {
+  "loader": "udl:glow_edge",
   "parent": "item/generated",
   "textures": {
     "layer0": "udl:item/debug"
+  },
+  "glow_edge": {
+    "glowColors": ["#FF0000", "#FF6000", "#FFC800"],
+    "glowAnimation": "pulse",
+    "glowWidth": 1.5,
+    "glowSpeed": 1.5
   }
 }

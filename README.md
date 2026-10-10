@@ -1,7 +1,8 @@
 # Ultra Damage Library
 このMODはライブラリではありません :D
 
-CosmicRenderer from NOBTG
+CosmicRenderer from NOBTG<br>
+GlowEdge from Luoee (Arcane Vortex)  作者の承諾を得て利用
 
 Todo: https://github.com/users/zenith-kamo/projects/1
 ---
