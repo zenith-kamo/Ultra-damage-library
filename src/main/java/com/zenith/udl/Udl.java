@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.logging.LogUtils;
 import com.zenith.udl.init.ModCreativeTabs;
+import com.zenith.udl.init.ModEntities;
 import com.zenith.udl.init.ModItems;
 import com.zenith.udl.init.UdlCommand;
 import com.zenith.udl.manager.UDLProtector;
@@ -59,6 +60,7 @@ public class Udl {
 
         // Register ourselves for server and other game events we are interested in
         ModItems.ITEMS.register(modEventBus);
+        ModEntities.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
 

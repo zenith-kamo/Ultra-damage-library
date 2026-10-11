@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class HeavenSkyElytraItem extends ElytraItem {
+public class HeavenSkyElytraItem extends ElytraItem implements IColoredTooltip {
 
     public HeavenSkyElytraItem() {
         super(new Item.Properties().durability(Integer.MAX_VALUE));
@@ -24,6 +24,20 @@ public class HeavenSkyElytraItem extends ElytraItem {
         tooltip.add(ColorUtil.makeRainbow("天を覆いし蒼穹の、その頂に至るもの。"));
         tooltip.add(ColorUtil.makeRainbow("雲は道となり、風は従者となる。"));
         tooltip.add(ColorUtil.makeRainbow("天地の境界に、この翼を阻むものはない。"));
+    }
 
+    @Override
+    public int getTooltipBackgroundColor() {
+        return 0x9000BDFC;
+    }
+
+    @Override
+    public int getTooltipBorderTopColor() {
+        return 0xE00011FF;
+    }
+
+    @Override
+    public int getTooltipBorderBottomColor() {
+        return 0xE00064fc;
     }
 }

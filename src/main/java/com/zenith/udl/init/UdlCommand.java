@@ -9,6 +9,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.zenith.udl.manager.EntityBanManager;
 import com.zenith.udl.manager.TargetManager;
 import com.zenith.udl.manager.TimeStopManager;
+import com.zenith.udl.manager.UdlItemProtection;
 import com.zenith.udl.network.NetworkHandler;
 import com.zenith.udl.util.udlsword.EntityRemoveUtil;
 import com.zenith.udl.util.GetAllEntitiesUtil;
@@ -95,6 +96,9 @@ public class UdlCommand {
                         )
                         .then(Commands.literal("clearList")
                                 .executes(UdlCommand::executeClearListCommand)
+                        )
+                        .then(Commands.literal("clearUdlItems")
+                                .executes(UdlCommand::executeClearUdlItemsCommand)
                         )
         );
     }
@@ -268,6 +272,13 @@ public class UdlCommand {
         TargetManager.clearTpTarget();
         EntityBanManager.clearBans();
         source.sendSuccess(() -> Component.literal("TargetManagerのリストを消去しました。").withStyle(ChatFormatting.GREEN), true);
+        return 1;
+    }
+
+    private static int executeClearUdlItemsCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        UdlItemProtection.disarmCurrentlyHeld(player);
+        context.getSource().sendSuccess(() -> Component.literal("現在所持しているUDL SwordとHeaven Sky Elytraの保護を解除しました。"), false);
         return 1;
     }
 }

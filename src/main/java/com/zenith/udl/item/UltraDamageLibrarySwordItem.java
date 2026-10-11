@@ -44,7 +44,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlowTooltip {
+public class UltraDamageLibrarySwordItem extends UdlSwordItem implements IUDLGlowTooltip{
 
     private static final Logger LOGGER = LogUtils.getLogger();
     private static boolean HIDDEN_ENTITY_ALL = false;
