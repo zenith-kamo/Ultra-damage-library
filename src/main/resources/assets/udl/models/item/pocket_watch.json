@@ -1,6 +1,13 @@
 {
+  "loader": "udl:glow_edge",
   "parent": "item/generated",
   "textures": {
     "layer0": "udl:item/pocket_watch"
+  },
+  "glow_edge": {
+    "glowColors": ["#000000", "#FFB700", "#000000"],
+    "glowAnimation": "pulse",
+    "glowSpeed": 0.25,
+    "glowWidth": 1.0
   }
 }

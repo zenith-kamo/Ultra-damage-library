@@ -1,0 +1,15 @@
+
+{
+  "loader": "udl:glow_edge",
+  "parent": "minecraft:item/elytra",
+  "textures": {
+    "layer0": "udl:item/heaven_sky_elytra"
+  },
+  "glow_edge": {
+    "glowColors": ["#ffe080", "#9ED3FF", "#4F95FF"],
+    "glowAnimation": "cycle",
+    "glowSpeed": 1.0,
+    "glowCycleWidth": 256.0,
+    "glowWidth": 1.5
+  }
+}

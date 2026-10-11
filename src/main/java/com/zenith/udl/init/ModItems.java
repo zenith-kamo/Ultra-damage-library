@@ -2,6 +2,7 @@ package com.zenith.udl.init;
 
 import com.zenith.udl.Udl;
 import com.zenith.udl.item.EndOfLifeSwordItem;
+import com.zenith.udl.item.HeavenSkyElytraItem;
 import com.zenith.udl.item.debug.Debug2Item;
 import com.zenith.udl.item.debug.Debug3Item;
 import com.zenith.udl.item.debug.DebugItem;
@@ -25,6 +26,8 @@ public class ModItems {
             : null;
     public static final RegistryObject<Item> POCKET_WATCH =
             ITEMS.register("pocket_watch", PocketWatchItem::new);
+    public static final RegistryObject<Item> HEAVEN_SKY_ELYTRA =
+            ITEMS.register("heaven_sky_elytra", HeavenSkyElytraItem::new);
     public static final RegistryObject<Item> DEBUG_ITEM =
             ITEMS.register("debug", () -> new DebugItem(new Item.Properties()));
     public static final RegistryObject<Item> DEBUG2_ITEM =
